@@ -1,0 +1,18 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;700&family=Quicksand:wght@400;600&family=Nunito:wght@400;700&display=swap');
+
+.home-content {
+  padding: 16px;
+}
+
+.home-greeting h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.user-name {
+  color: #3880ff; /* Ionic primary color */
+}
+
