@@ -1,104 +1,96 @@
-import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
-  IonIcon,
-  IonLabel,
   IonRouterOutlet,
+  IonTabs,
   IonTabBar,
   IonTabButton,
-  IonTabs,
-  setupIonicReact
-} from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { heart, helpCircle, home, person, searchCircle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
-import Tab4 from './pages/Tab4';
-import Tab5 from './pages/Tab5';
+  IonIcon,
+  IonLabel,
+  setupIonicReact,
+} from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import { Redirect, Route } from "react-router-dom";
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
+import { home, heart, searchCircle, person, helpCircle } from "ionicons/icons";
+
+import Login from "./pages/login";
+import Signup from "./pages/signup";
+import Tab1 from "./pages/Tab1";
+
+/* Core CSS required for Ionic components to work */
+import "@ionic/react/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
+import "@ionic/react/css/normalize.css";
+import "@ionic/react/css/structure.css";
+import "@ionic/react/css/typography.css";
 
 /* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+import "@ionic/react/css/padding.css";
+import "@ionic/react/css/float-elements.css";
+import "@ionic/react/css/text-alignment.css";
+import "@ionic/react/css/text-transformation.css";
+import "@ionic/react/css/flex-utils.css";
+import "@ionic/react/css/display.css";
 
 /* Theme variables */
-import './theme/variables.css';
+import "./theme/variables.css";
 
 setupIonicReact();
 
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonTabs>
-        {/* pang route sa tabs/pages */}
-        <IonRouterOutlet>
-          <Route exact path="/tab1">
-          <Tab1 />
-        </Route>
-        <Route exact path="/tab2">
-          <Tab2 />
-        </Route>
-        <Route exact path="/tab3">
-          <Tab3 />
-        </Route>
-        <Route exact path="/tab4">
-          <Tab4 />
-        </Route>
-        <Route exact path="/tab5">
-          <Tab5 />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/tab1" />
-        </Route>
-        </IonRouterOutlet>
+      <IonRouterOutlet>
+        {/* Login page */}
+        <Route path="/login" component={Login} exact />
 
-        {/* tab bar */}
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={home} />
-            <IonLabel>Home</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={heart} />
-            <IonLabel>Donations</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={searchCircle} />
-            <IonLabel>Trace</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab4" href="/tab4">
-            <IonIcon aria-hidden="true" icon={person} />
-            <IonLabel>Profile</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab5" href="/tab5">
-            <IonIcon aria-hidden="true" icon={helpCircle} />
-            <IonLabel>Help</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
+        {/* Signup page */}
+        <Route path="/signup" component={Signup} exact />
+
+        {/* Tabs (main app) */}
+        <Route
+          path="/tabs"
+          render={() => (
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/tabs/tab1" component={Tab1} />
+                <Redirect exact from="/tabs" to="/tabs/tab1" />
+              </IonRouterOutlet>
+
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="tab1" href="/tabs/tab1">
+                  <IonIcon aria-hidden="true" icon={home} />
+                  <IonLabel>Home</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton tab="tab2" href="/tabs/tab2">
+                  <IonIcon aria-hidden="true" icon={heart} />
+                  <IonLabel>Donations</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton tab="tab3" href="/tabs/tab3">
+                  <IonIcon aria-hidden="true" icon={searchCircle} />
+                  <IonLabel>Trace</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton tab="tab4" href="/tabs/tab4">
+                  <IonIcon aria-hidden="true" icon={person} />
+                  <IonLabel>Profile</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton tab="tab5" href="/tabs/tab5">
+                  <IonIcon aria-hidden="true" icon={helpCircle} />
+                  <IonLabel>Help</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          )}
+        />
+
+        {/* Default route → Login */}
+        <Redirect exact from="/" to="/login" />
+      </IonRouterOutlet>
     </IonReactRouter>
   </IonApp>
 );
