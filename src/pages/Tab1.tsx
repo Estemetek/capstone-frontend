@@ -1,17 +1,33 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCard, IonCardContent } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Tab1.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonCard,
+  IonCardContent,
+} from "@ionic/react";
+import "./Tab1.css";
 
 const Tab1: React.FC = () => {
-  const userName = "Eunice"; // placeholder, will replace with API later
+  const userName = "Dominique"; // placeholder, replace later with API
+
   return (
     <IonPage>
+      {/* ✅ Header at the top */}
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Home</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+
       <IonContent fullscreen className="home-content">
-        {/* Greeting Section */}
-        <div className="home-greeting">
-          <h1>Hello, <span className="user-name">{userName}</span> 👋</h1>
+        {/* Greeting Section - aligned left */}
+        <div className="home-greeting" style={{ textAlign: "left", margin: "20px" }}>
+          <h1>
+            Hello, <span className="user-name">{userName}</span> 👋
+          </h1>
         </div>
-        {/* <ExploreContainer name="Home page" /> */}
 
         {/* Quick Stats / Cards Example */}
         <IonCard>
