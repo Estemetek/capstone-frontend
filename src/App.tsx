@@ -16,6 +16,11 @@ import { home, heart, searchCircle, person, helpCircle } from "ionicons/icons";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Tab1 from "./pages/Tab1";
+import Tab2 from "./pages/Tab2";
+import Tab3 from "./pages/Tab3";
+import Tab4 from "./pages/Tab4";
+import Tab5 from "./pages/Tab5";
+import AddDonation from "./pages/AddDonation";
 
 /* Core CSS required for Ionic components to work */
 import "@ionic/react/css/core.css";
@@ -55,6 +60,11 @@ const App: React.FC = () => (
             <IonTabs>
               <IonRouterOutlet>
                 <Route exact path="/tabs/tab1" component={Tab1} />
+                <Route exact path="/tabs/tab2" component={Tab2} />
+                <Route exact path="/tabs/tab3" component={Tab3} />
+                <Route exact path="/tabs/tab4" component={Tab4} />
+                <Route exact path="/tabs/tab5" component={Tab5} />
+
                 <Redirect exact from="/tabs" to="/tabs/tab1" />
               </IonRouterOutlet>
 
@@ -87,6 +97,9 @@ const App: React.FC = () => (
             </IonTabs>
           )}
         />
+
+        {/* Add Donation route */}
+        <Route exact path="/add-donation" component={AddDonation} />
 
         {/* Default route → Login */}
         <Redirect exact from="/" to="/login" />
