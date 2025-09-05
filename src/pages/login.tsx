@@ -11,14 +11,19 @@ const Login: React.FC = () => {
   return (
     <IonPage className="login-page">
       <IonContent fullscreen>
-        <div className="login-box">
+        {/* Wave background top */}
+        <div className="wave wave-top"></div>
+      
+        {/* Centered container */}
+        <div className="login-container">
           {/* Logo */}
-          <div className="login-logo">
-            <img src="assets/BrightAid Logo.png" alt="App Logo" />
-          </div>
+        <div className="login-logo">
+          <img src="assets/logo.png"/>
+        </div>
+
 
           {/* Welcome greeting */}
-          <div className="login-title">Welcome</div>
+          <div className="login-title">WELCOME</div>
           <p className="login-subtitle">Log in to your account to continue</p>
 
           {/* Form */}
@@ -27,13 +32,11 @@ const Login: React.FC = () => {
               className="login-input"
               type="email"
               placeholder="Email"
-              fill="outline"
             />
             <IonInput
               className="login-input"
               type="password"
               placeholder="Password"
-              fill="outline"
             />
             <IonButton expand="block" className="login-button" routerLink="/tabs/tab1">
               Login
@@ -42,9 +45,11 @@ const Login: React.FC = () => {
 
           <p className="signup-text">
             Don’t have an account? <a href="/signup">Sign up</a>
-            </p>
-            
+          </p>
         </div>
+
+        {/* Wave background bottom */}
+        <div className="wave wave-bottom"></div>
       </IonContent>
     </IonPage>
   );

@@ -1,112 +1,142 @@
 import {
-  IonContent,
-  IonHeader,
   IonPage,
-  IonTitle,
+  IonHeader,
   IonToolbar,
+  IonTitle,
+  IonContent,
+  IonSearchbar,
   IonCard,
+  IonCardHeader,
+  IonCardTitle,
   IonCardContent,
-  IonSpinner,
-  IonText,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonIcon,
+  IonButton,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import {
+  addCircleOutline,
+  heartOutline,
+  peopleOutline,
+  ellipsisHorizontal,
+  megaphoneOutline,
+} from "ionicons/icons";
 import "./Tab1.css";
-import { getDonations, Donation } from "../services/api";
 
-const Tab1: React.FC = () => {
-  const userName = "Dominique"; // placeholder
-  const [donations, setDonations] = useState<Donation[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch donations from backend
-  const fetchDonations = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getDonations();
-      setDonations(data);
-    } catch (err: any) {
-      console.error("Failed to fetch donations:", err);
-      setError(err.message || "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDonations();
-  }, []);
-
-  const totalDonations = donations.length;
-  const itemsDelivered = donations.filter((d) => d.Owner && d.Owner !== "").length;
-
+const Home: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar color="light">
           <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen className="home-content">
+      <IonContent className="ion-padding">
+
         {/* Greeting */}
-        <div className="home-greeting" style={{ textAlign: "left", margin: "20px" }}>
-          <h1>
-            Hello, <span className="user-name">{userName}</span> 👋
-          </h1>
-          <p>Making a difference, one donation at a time.</p>
+        <h2 className="greeting">
+          Hi <span className="highlight">Dominique</span>,
+        </h2>
+        <p className="subtext">Making a difference, one donation at a time.</p>
+
+
+        <div className="search-container">
+  <input
+    type="text"
+    placeholder="what do you want to help?"
+    className="search-input"
+  />
+  <div className="search-btn">
+    <IonIcon icon="options-outline" />
+  </div>
+</div>
+
+        {/* Image banner */}
+        <div className="banner">
+          <img src="/assets/donate.png" className="banner-img" />
+          <div className="banner-overlay">
+            <IonButton fill="solid" size="small" className="view-more-btn">
+              View more
+            </IonButton>
+          </div>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <IonSpinner name="crescent" />
-          </div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <IonText color="danger">
-            <p style={{ textAlign: "center", marginTop: "20px" }}>Error: {error}</p>
-          </IonText>
-        )}
+        {/* Stats section */}
+<IonGrid>
+  <IonRow>
+    <IonCol size="4">
+      <div className="stat-card">
+        <p>Items Donated</p>
+        <h3>3</h3>
+      </div>
+    </IonCol>
+    <IonCol size="4">
+      <div className="stat-card">
+        <p>Students Helped</p>
+        <h3>1</h3>
+      </div>
+    </IonCol>
+    <IonCol size="4">
+      <div className="stat-card">
+        <p>Drop Off Schedule</p>
+        <h3>2</h3>
+      </div>
+    </IonCol>
+  </IonRow>
+</IonGrid>
 
-        {/* Stats and donation list */}
-        {!loading && !error && (
-          <>
-            <IonCard>
-              <IonCardContent>
-                <h2>Total Donations</h2>
-                <p>{totalDonations} Items</p>
-              </IonCardContent>
-            </IonCard>
 
-            <IonCard>
-              <IonCardContent>
-                <h2>Items Delivered</h2>
-                <p>{itemsDelivered} Items</p>
-              </IonCardContent>
-            </IonCard>
+        {/* Sharing kindness */}
+        <div className="section-header">
+          <h3>Sharing Kindness</h3>
+          <a href="#">See all</a>
+        </div>
 
-            {/* Donation List */}
-            {donations.map((donation) => (
-              <IonCard key={donation.ID}>
-                <IonCardContent>
-                  <h3>
-                    {donation.ID} - {donation.Color || "N/A"}
-                  </h3>
-                  <p>Owner: {donation.Owner || "N/A"}</p>
-                  <p>Size: {donation.Size ?? "N/A"}</p>
-                  <p>Appraised Value: {donation.AppraisedValue ?? "N/A"}</p>
-                </IonCardContent>
-              </IonCard>
-            ))}
-          </>
-        )}
+        <IonGrid>
+          <IonRow>
+            <IonCol size="3" className="ion-text-center">
+              <div className="icon-circle">
+                <IonIcon icon={addCircleOutline} size="large" />
+              </div>
+              <p>Donate</p>
+            </IonCol>
+            <IonCol size="3" className="ion-text-center">
+              <div className="icon-circle">
+                <IonIcon icon={heartOutline} size="large" />
+              </div>
+              <p>Charity</p>
+            </IonCol>
+            <IonCol size="3" className="ion-text-center">
+              <div className="icon-circle">
+                <IonIcon icon={peopleOutline} size="large" />
+              </div>
+              <p>Campaigns</p>
+            </IonCol>
+            <IonCol size="3" className="ion-text-center">
+              <div className="icon-circle">
+                <IonIcon icon={ellipsisHorizontal} size="large" />
+              </div>
+              <p>More</p>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+
+        {/* Urgent Donation */}
+        <h3>Urgent Donation</h3>
+        <IonCard className="urgent-card">
+          <IonCardContent>
+            <IonIcon icon={megaphoneOutline} size="large" />
+            <h2>Call for Donations</h2>
+            <p>Many schools lack the basic tools students need to learn...</p>
+          </IonCardContent>
+        </IonCard>
+
       </IonContent>
     </IonPage>
   );
 };
 
-export default Tab1;
+export default Home;

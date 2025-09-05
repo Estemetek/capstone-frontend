@@ -1,0 +1,184 @@
+/* Segmented control wrapper */
+.trace-segment {
+  margin: 40px auto 20px auto; /* top margin increased */
+  width: 90%;
+}
+
+/* Segment container */
+.trace-segment ion-segment {
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+}
+
+/* Buttons (inactive defaults + checked vars) */
+.trace-segment ion-segment-button {
+  flex: 1;                           /* equal width */
+  --indicator-color: transparent;
+  --background: #f5f5f5;             /* inactive bg */
+  --color: #000;                     /* inactive text */
+  --background-checked: #4F7EBD;     /* ACTIVE bg */
+  --color-checked: #fff;             /* ACTIVE text */
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;;
+}
+
+/* Active fallback (covers older Ionic builds) */
+.trace-segment ion-segment-button[aria-pressed="true"],
+.trace-segment ion-segment-button[aria-selected="true"],
+.trace-segment ion-segment-button.ion-segment-button-checked {
+  --background: #4F7EBD;
+  --color: #fff;
+  font-weight: 700;
+}
+
+/* Hover ONLY for inactive (desktop) */
+.trace-segment ion-segment-button:not([aria-pressed="true"]):not(.ion-segment-button-checked):hover {
+  --background: #B9D5EA;  /* light blue-gray */
+  --color: #000;
+}
+
+
+/* Scan container */
+.scan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+
+.qr-image {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+.scan-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 5px;
+}
+
+.scan-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Share tab container */
+.share-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+/* QR Box */
+.qr-box {
+  padding: 15px;
+  border-radius: 12px;
+  border: 2px solid #4a80d6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.qr-image {
+  width: 160px;
+  height: 160px;
+}
+
+/* Titles */
+.scan-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 5px;
+}
+.scan-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Shared section container */
+.section {
+  background: #f2f4f7; /* light gray background */
+  width: 90%;
+  border-radius: 14px;
+  padding: 15px;
+  margin: 10px;  /* increased vertical spacing */
+}
+
+/* Section title */
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #003366; /* dark blue */
+  margin-bottom: 12px;
+}
+
+/* History card */
+.history-card {
+  display: flex;
+  align-items: center;
+  background: #E3E3E9;
+  border: 2px solid #003366; /* blue border */
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.history-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+}
+
+.history-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-asset {
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #666;
+  margin: 2px 0 0 0;
+}
+
+/* Manual input */
+.manual-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid #003366;
+  background: #E3E3E9;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* Trace button */
+.manual-btn {
+  width: 100%;
+  background: #6c7a91; /* gray button like screenshot */
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.manual-btn:hover {
+  background: #5a667a; /* slightly darker hover */
+}
+

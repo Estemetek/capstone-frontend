@@ -1,3 +1,57 @@
 .add-donation-content {
-  padding: 16px;
+  --background: #f9f9fb;
+  padding: 20px;
+}
+
+/* Section title */
+.form-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* Field group */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+/* Label (outside the box) */
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b438d;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Input/Select/Textarea box */
+.form-box {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.form-box ion-input,
+.form-box ion-select,
+.form-box ion-textarea {
+  font-size: 14px;
+  color: #222;
+  width: 100%;
+}
+
+/* Textarea */
+.form-box ion-textarea {
+  min-height: 60px;
+}
+
+/* Donate button */
+.donate-button {
+  --background: #003366;
+  --border-radius: 8px;
+  font-weight: bold;
+  margin-top: 25px;
 }

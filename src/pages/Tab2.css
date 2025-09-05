@@ -1,29 +1,158 @@
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@400;700&family=Quicksand:wght@400;600&family=Nunito:wght@400;700&display=swap');
-
 .donations-content {
   padding: 16px;
+  --background: #f9f9fb;
 }
 
-/* Use the same greeting style as Tab1 */
-.home-greeting h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 25px;
+/* Section Title */
+.section-title {
+  text-align: left;
+  font-size: 30px;
   font-weight: 600;
-  margin-bottom: 15px;
-  padding-bottom: 0px;
+  margin-bottom: 10px;
+  margin-left: 15px;
+  color: #000000;
 }
 
-.home-greeting p {
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  color: #666;
-  padding-top: 0%;
-  margin-top: -10px;
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.user-name {
-  color: #3880ff;
+.filter-chip {
+  --background: #E3E3E9; 
+  --color: #0B438D;        
+  font-weight: 500;
+  border-radius: 16px;
+  font-weight: bold;
+  padding: 0 12px;
 }
 
+/* Stats Cards */
+.stat-card {
+  background: #3b73c5;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px;
+}
+.stat-card p {
+  font-size: 15px;
+  margin: 0;
+}
+.stat-card h3 {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Donation Cards */
+.donation-card {
+  background: #B9D5EA !important; /* light blue background */
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: none; /* remove Ionic default shadow */
+}
+
+.donation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.donation-icon {
+  background: #E3E3E9; /* softer icon bg */
+  border-radius: 12px;
+  padding: 12px;
+  margin-right: 12px;
+}
+
+.donation-icon ion-icon {
+  font-size: 24px;
+  color: #003366; /* dark blue for consistency */
+}
+
+.donation-details {
+  flex: 1;
+}
+
+.donation-details h4 {
+  font-size: 15px;
+  color:#000;
+  margin: 0;
+  font-weight: bold;
+}
+
+.donation-details p {
+  font-size: 13px;
+  color: #000000;
+  margin: 4px 0 0;
+}
+
+.status-badge {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 80px;
+}
+.status-badge.in-transit {
+  background: #E3E3E9;
+  color: #000;
+}
+.status-badge.delivered {
+  background: #E3E3E9;
+  color: #000000;
+}
+.status-badge.received {
+  background: #E3E3E9;
+  color: #000000;
+}
+
+/* Empty State */
+.empty-card {
+  background: #3b73c5; /* blue background */
+  color: #fff;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.empty-card-content {
+  display: flex;
+  align-items: center;
+}
+
+.empty-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.empty-icon ion-icon {
+  font-size: 30px;
+  color: #fff;
+}
+
+.empty-text h4 {
+  font-size: 20px;
+  margin: 0;
+  font-weight: bold;
+  color: #fff;
+}
+
+.empty-text p {
+  font-size: 13px;
+  margin: 4px 0 0;
+  color: #e6e6e6;
+}

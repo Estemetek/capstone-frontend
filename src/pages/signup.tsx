@@ -11,17 +11,17 @@ const Signup: React.FC = () => {
   const history = useHistory();
 
   const handleSignup = () => {
-    // 🔹 Replace with actual signup logic later (API call, validation, etc.)
-    history.push("/tabs/Tab1"); // Redirect after signup
+    // 🔹 Replace with actual signup logic later
+    history.push("/tabs/tab1"); 
   };
 
   return (
     <IonPage className="signup-page">
       <IonContent fullscreen>
-        <div className="signup-box">
+        <div className="signup-container">
           {/* Logo */}
           <div className="signup-logo">
-            <img src="assets/BrightAid Logo.png" alt="Logo" />
+            <img src="assets/logo.png" />
           </div>
 
           {/* Titles */}
@@ -32,37 +32,29 @@ const Signup: React.FC = () => {
           <form className="signup-form">
             <IonInput
               className="signup-input"
-              label="Full Name"
-              labelPlacement="floating"
-              fill="outline"
               type="text"
+              placeholder="Full Name"
               required
             />
 
             <IonInput
               className="signup-input"
-              label="Email"
-              labelPlacement="floating"
-              fill="outline"
               type="email"
+              placeholder="Email"
               required
             />
 
             <IonInput
               className="signup-input"
-              label="Password"
-              labelPlacement="floating"
-              fill="outline"
               type="password"
+              placeholder="Password"
               required
             />
 
             <IonInput
               className="signup-input"
-              label="Confirm Password"
-              labelPlacement="floating"
-              fill="outline"
               type="password"
+              placeholder="Confirm Password"
               required
             />
 
