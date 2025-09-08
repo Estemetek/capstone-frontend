@@ -42,7 +42,7 @@ const Tab3: React.FC = () => {
         {/* Scan Content */}
         {selected === "scan" && (
           <div className="scan-container">
-            <img src="/assets/qr-placeholder.png" alt="QR Scanner" className="qr-image" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="QR Scanner" className="qr-image" />
             <h2 className="scan-title">Scan QR Code</h2>
             <p className="scan-subtitle">Scan to trace the donation</p>
           </div>
@@ -53,7 +53,7 @@ const Tab3: React.FC = () => {
           <div className="share-container">
             {/* QR Code */}
             <div className="qr-box">
-              <img src="/assets/qr-placeholder.png" alt="QR Code" className="qr-image" />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="QR Code" className="qr-image" />
             </div>
             <h2 className="scan-title">Your QR Code</h2>
             <p className="scan-subtitle">Scan to trace the donation</p>
@@ -62,7 +62,7 @@ const Tab3: React.FC = () => {
             <div className="section">
               <h3 className="section-title">Scan History</h3>
               <div className="history-card">
-                <img src="/assets/qr-placeholder.png" alt="History QR" className="history-icon" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="History QR" className="history-icon" />
                 <div className="history-details">
                   <p className="history-asset">Asset ID: 12345</p>
                   <p className="history-time">Scanned 2 hours ago</p>

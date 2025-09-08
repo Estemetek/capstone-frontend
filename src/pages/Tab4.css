@@ -1,0 +1,167 @@
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0 10px 0;
+  position: relative; /* for positioning the edit button */
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 10px;
+}
+
+.edit-profile-btn {
+  position: absolute;
+  top: 5px;
+  right: 20px;
+  font-size: 24px;
+  color: #3b82f6; /* blue */
+  cursor: pointer;
+}
+
+.profile-info {
+  background-color: #cfe1f9; /* light blue highlight */
+  text-align: center;
+  font-size: 18px;
+  padding: 12px 0;
+  margin: 0 20px 20px 20px;
+  border-radius: 6px;
+}
+
+.profile-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.profile-id {
+  font-size: 14px;
+  color: #333;
+  margin: 4px 0 0 0;
+}
+
+/* Menu List */
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.menu-row:hover {
+  opacity: 0.85;
+}
+
+.circle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #0a4fa3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.circle-btn ion-icon {
+  font-size: 26px;
+  color: white;
+}
+
+.menu-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+}
+
+.form-container {
+  margin: 20px;
+  display: flex;
+  font-size: 20px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-box {
+  background: #cfe1f9;         /* light blue background */
+  border-radius: 6px;          /* rounded corners */
+  padding: 12px;               /* spacing inside box */
+  margin-top: 5px;
+  font-size: 18px;
+  color: #000;                 /* text color black */
+  
+  --padding-start: 12px;       /* Ionic input left padding */
+  --padding-end: 12px;         /* right padding */
+  --padding-top: 10px;         /* top padding */
+  --padding-bottom: 10px;      /* bottom padding */
+}
+
+
+.update-btn {
+  margin-top: 20px;
+  --background: #0a4fa3;
+  --color: white;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+/* Settings Page */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  gap: 15px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.settings-icon {
+  font-size: 22px;
+  color: #0a4fa3;
+  margin-right: 12px;
+  background: #0a4fa3;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.settings-text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+}
+
+.settings-chevron {
+  font-size: 20px;
+  color: #666;
+}
+
+.header-with-back {
+  display: flex;
+  align-items: center;
+}
+
+.back-btn {
+  font-size: 25px;
+  margin-left: 20px;
+  cursor: pointer;
+}

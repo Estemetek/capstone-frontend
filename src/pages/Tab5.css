@@ -1,0 +1,148 @@
+.help-settings-icon {
+  font-size: 22px;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.help-container {
+  padding: 20px;
+}
+
+.help-heading {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.help-divider {
+  border: 0;
+  border-top: 1px solid #ddd;
+  margin: 0 auto 20px auto;
+  width: 90%;
+}
+
+/* Filter Buttons */
+.help-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.filter-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: #cfd8e3; /* inactive light blue */
+  color: #333;
+}
+
+.filter-btn.active {
+  background: #2d64b3; /* active dark blue */
+  color: white;
+}
+
+/* Editable Search */
+.help-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #cfd8e3;
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 14px;
+  color: #000;
+  --background: transparent;
+  --padding-start: 10px;
+  --placeholder-color: #555;
+}
+
+.search-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #2d64b3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-btn ion-icon {
+  font-size: 16px;
+  color: white;
+}
+
+/* FAQ Section */
+.faq-section {
+  margin-top: 10px;
+}
+
+.faq-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.faq-question {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.faq-chevron {
+  font-size: 18px;
+  color: #555;
+}
+
+.faq-answer {
+  font-size: 14px;
+  color: #444;
+  margin: 8px 0 12px 0;
+  line-height: 1.4;
+}
+
+.faq-section {
+  margin-top: 10px;
+}
+
+.faq-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.faq-question {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.faq-chevron {
+  font-size: 18px;
+  color: #555;
+}
+
+.faq-answer {
+  font-size: 18px;
+  color: #444;
+  margin: 8px 0 12px 0;
+  line-height: 1.4;
+  padding-left: 5px;
+}

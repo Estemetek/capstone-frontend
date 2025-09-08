@@ -1,51 +1,54 @@
 .add-donation-content {
   --background: #f9f9fb;
-  padding: 20px;
+  padding: 20px; /* overall padding */
 }
 
 /* Section title */
 .form-title {
-  font-size: 22px;
+  font-size: 30px;
   font-weight: 600;
   color: #222;
   margin-bottom: 20px;
   text-align: left;
+  padding-left: 10px;  /* align with form fields */
 }
 
 /* Field group */
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   text-align: left;
+  padding-left: 10px;   /* shift inward from left */
+  padding-right: 10px;  /* shift inward from right */
 }
 
-/* Label (outside the box) */
+/* Label above the field */
 .form-label {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
-  color: #0b438d;
-  margin-bottom: 6px;
+  color: #000;
+  margin-bottom: 8px;
   display: block;
 }
 
-/* Input/Select/Textarea box */
+/* Input/Select/Textarea styled as boxes */
 .form-box {
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 10px 12px;
-}
-
-.form-box ion-input,
-.form-box ion-select,
-.form-box ion-textarea {
+  padding: 14px;
   font-size: 14px;
   color: #222;
   width: 100%;
+  box-sizing: border-box; /* ensures padding stays inside */
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
 }
 
 /* Textarea */
 .form-box ion-textarea {
-  min-height: 60px;
+  min-height: 70px;
 }
 
 /* Donate button */
@@ -54,4 +57,68 @@
   --border-radius: 8px;
   font-weight: bold;
   margin-top: 25px;
+  margin-left: 10px;
+  margin-right: 10px; /* keep same alignment as inputs */
+}
+
+/* Confirmation Banner */
+.banner-image img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Success Box */
+.success-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.success-logo {
+  width: 100px;   /* bigger width */
+  height: auto;  /* keep aspect ratio */
+  margin-bottom: 15px;
+}
+
+
+.success-title {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.success-text {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.qr-code {
+  margin: 15px 0;
+}
+
+.qr-code img {
+  width: 150px;
+  height: 150px;
+}
+
+.qr-text {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.download-btn {
+  --background: #0a4fa3;
+  --border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.done-btn {
+  --border-radius: 8px;
+  --color: #555;
 }

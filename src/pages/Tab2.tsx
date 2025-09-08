@@ -44,7 +44,8 @@ const Tab2: React.FC = () => {
       <IonContent fullscreen className="donations-content">
 
         {/* My Donations Title */}
-        <h2 className="section-title">My Donations</h2>
+        <h1 className="section-title" style={{ fontSize: '30px', color: 'black' }}>My Donations</h1>
+
 
         {/* Filters */}
         <div className="filters">
@@ -101,7 +102,7 @@ const Tab2: React.FC = () => {
 <IonCard className="empty-card">
   <IonCardContent className="empty-card-content">
     <div className="empty-icon">
-      <IonIcon icon="heart-outline" />
+      <IonIcon icon={bagOutline} />  {/* replace with desired icon */}
     </div>
     <div className="empty-text">
       <h4>You haven’t donated yet</h4>
@@ -109,6 +110,7 @@ const Tab2: React.FC = () => {
     </div>
   </IonCardContent>
 </IonCard>
+
 
         {/* Floating Add Donation Button */}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">

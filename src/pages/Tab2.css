@@ -6,12 +6,13 @@
 /* Section Title */
 .section-title {
   text-align: left;
-  font-size: 30px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-size: 20px;    /* bigger than before */
+  font-weight: 700;   /* bold */
+  margin-bottom: 15px;
   margin-left: 15px;
-  color: #000000;
+  color: #000000;     /* deep blue (same as your theme) */
 }
+
 
 .filters {
   display: flex;

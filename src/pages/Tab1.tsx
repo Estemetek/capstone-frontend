@@ -23,6 +23,8 @@ import {
   megaphoneOutline,
 } from "ionicons/icons";
 import "./Tab1.css";
+import { optionsOutline } from "ionicons/icons";
+
 
 const Home: React.FC = () => {
   return (
@@ -49,8 +51,9 @@ const Home: React.FC = () => {
     className="search-input"
   />
   <div className="search-btn">
-    <IonIcon icon="options-outline" />
-  </div>
+  <IonIcon icon={optionsOutline} />
+</div>
+
 </div>
 
         {/* Image banner */}
