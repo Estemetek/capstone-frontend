@@ -182,3 +182,11 @@
   background: #5a667a; /* slightly darker hover */
 }
 
+.history-card.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.history-card.clickable:hover {
+  background: #f0f0f0;
+}

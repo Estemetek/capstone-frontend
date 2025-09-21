@@ -1,64 +1,39 @@
-/* Greeting */
+/* Greeting / Hero */
 .greeting {
-  font-size: 30px; /* same size as your screenshot */
+  font-size: 28px;
   font-weight: bold;
   margin: 0;
-  color: #000; /* default text color */
+  color: #000;
 }
 
 .greeting .highlight {
-  color: #003366; /* blue for name */
+  color: #003366;
 }
 
 .subtext {
   font-size: 15px;
   font-weight: normal;
   color: #555;
-  margin-top: 4px;
+  margin: 8px 0 16px;
 }
 
-.search-container {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border: 1.5px solid #003366;
-  border-radius: 50px;
-  padding: 6px 10px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
-  margin: 12px 0 20px;
+.donate-btn {
+  --background: #003366;
+  --color: #fff;
+  --border-radius: 10px;
+  font-weight: bold;
+  margin-top: 12px;
 }
 
-.search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  color: #333;
-  background: transparent;
-}
-
-.search-btn {
-  background: #003366;
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.search-btn ion-icon {
-  color: #fff;
-  font-size: 18px;
-}
-
+/* Banner */
 .banner {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
-  height: 160px; /* adjust size as needed */
-  background: #ddd; /* fallback if image not loaded */
+  height: 160px;
+  margin: 20px 0;
+  background: #ddd;
 }
 
 .banner-img {
@@ -68,32 +43,27 @@
   border-radius: 12px;
 }
 
-.banner-overlay {
+.banner-text {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-}
-
-.view-more-btn {
-  --background: #003366; /* dark blue */
-  --color: #fff;
-  --border-radius: 8px;
-  font-size: 12px;
+  bottom: 12px;
+  left: 16px;
+  color: #fff;
+  font-size: 16px;
   font-weight: bold;
-  text-transform: uppercase;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
 }
 
-
+/* Stat Cards */
 .stat-card {
-  background: #3b73c5; /* your blue */
+  background: #3b73c5;
   color: #fff;
   border-radius: 12px;
   padding: 12px;
   text-align: center;
   display: flex;
-  flex-direction: column; /* vertical layout */
-  justify-content: space-between; /* label top, number bottom */
-  height: 90px; /* consistent card height */
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90px;
 }
 
 .stat-card p {
@@ -109,41 +79,45 @@
   color: #fff;
 }
 
-
-
-/* Section Header */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 18px 0 8px;
+/* Sections */
+.section {
+  margin: 24px 0;
 }
-.section-header h3 {
-  font-size: 16px;
+
+.section h3 {
+  font-size: 18px;
   font-weight: bold;
-}
-.section-header a {
-  font-size: 13px;
+  margin-bottom: 12px;
   color: #003366;
-  text-decoration: none;
-  font-weight: 500;
+  text-align: left;
 }
 
-/* Icons */
-.icon-circle {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-}
+/* How It Works */
 ion-col p {
   font-size: 13px;
   margin-top: 6px;
   color: #444;
+}
+
+/* Values */
+.value-card {
+  background: #f8f9fb;
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.value-card h4 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #003366;
+  margin: 0 0 6px;
+}
+
+.value-card p {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
 }
 
 /* Urgent Card */
@@ -153,12 +127,28 @@ ion-col p {
   border-radius: 14px;
   padding: 16px;
 }
+
 .urgent-card h2 {
   font-size: 18px;
   margin: 10px 0 6px;
 }
+
 .urgent-card p {
   font-size: 14px;
   margin: 0;
   color: #e0e0e0;
+}
+
+/* Footer */
+.footer {
+  margin: 32px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+}
+
+.footer p {
+  margin: 4px 0;
 }

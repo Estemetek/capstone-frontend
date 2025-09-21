@@ -98,3 +98,10 @@
 .wave-bottom {
   bottom: 0;
 }
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin: 6px 0 0 4px;
+  text-align: left;
+}
+

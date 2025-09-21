@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   IonContent,
   IonPage,
@@ -14,24 +15,47 @@ import {
   IonIcon,
   IonChip,
   IonLabel,
+  IonSpinner,
 } from "@ionic/react";
-import {
-  add,
-  laptopOutline,
-  cubeOutline,
-  bagOutline,
-} from "ionicons/icons";
+import { add, laptopOutline, cubeOutline, bagOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
+import { getDonations, BlockchainDonation } from "../services/api";
 import "./Tab2.css";
-
-const mockDonations = [
-  { id: "12345", updated: "2 days ago by Admin", status: "In Transit", icon: laptopOutline },
-  { id: "67890", updated: "1 week ago by Partner Org", status: "Delivered", icon: cubeOutline },
-  { id: "14333", updated: "1 day ago by Partner Org", status: "Received", icon: bagOutline },
-];
 
 const Tab2: React.FC = () => {
   const history = useHistory();
+  const [donations, setDonations] = useState<BlockchainDonation[]>([]);
+  const [filteredDonations, setFilteredDonations] = useState<BlockchainDonation[]>([]);
+  const [filter, setFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  const userId = localStorage.getItem("userId"); // 👈 comes from login
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const data = await getDonations(userId || "");
+        setDonations(data);
+        setFilteredDonations(data); // default = all
+      } catch (err) {
+        console.error("❌ Error fetching donations:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [userId]);
+
+  // Handle filter change
+  const handleFilter = (status: string) => {
+    setFilter(status);
+    if (status === "All") {
+      setFilteredDonations(donations);
+    } else {
+      setFilteredDonations(donations.filter((d) => d.status === status));
+    }
+  };
 
   return (
     <IonPage>
@@ -42,75 +66,74 @@ const Tab2: React.FC = () => {
       </IonHeader>
 
       <IonContent fullscreen className="donations-content">
-
-        {/* My Donations Title */}
-        <h1 className="section-title" style={{ fontSize: '30px', color: 'black' }}>My Donations</h1>
-
+        <h1 className="section-title">My Donations</h1>
 
         {/* Filters */}
         <div className="filters">
-          <IonChip className="filter-chip"><IonLabel>All</IonLabel></IonChip>
-          <IonChip className="filter-chip"><IonLabel>Pending</IonLabel></IonChip>
-          <IonChip className="filter-chip"><IonLabel>In Transit</IonLabel></IonChip>
-          <IonChip className="filter-chip"><IonLabel>Delivered</IonLabel></IonChip>
+          {["All", "Pending", "Donated", "In Transit", "Delivered", "Received"].map((status) => (
+            <IonChip
+              key={status}
+              className={`filter-chip ${filter === status ? "active" : ""}`}
+              onClick={() => handleFilter(status)}
+            >
+              <IonLabel>{status}</IonLabel>
+            </IonChip>
+          ))}
         </div>
 
-
-        {/* Stats */}
-        <IonGrid>
-          <IonRow>
-            <IonCol size="4">
-              <div className="stat-card">
-                <p>Total Items Donated</p>
-                <h3>3</h3>
-              </div>
-            </IonCol>
-            <IonCol size="4">
-              <div className="stat-card">
-                <p>Students Helped</p>
-                <h3>1</h3>
-              </div>
-            </IonCol>
-            <IonCol size="4">
-              <div className="stat-card">
-                <p>Organizations Supported</p>
-                <h3>2</h3>
-              </div>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+        {/* Loading Spinner */}
+        {loading && <IonSpinner name="crescent" />}
 
         {/* Donation List */}
-        {mockDonations.map((donation) => (
-          <IonCard key={donation.id} className="donation-card">
-            <IonCardContent className="donation-item">
-              <div className="donation-icon">
-                <IonIcon icon={donation.icon} />
-              </div>
-              <div className="donation-details">
-                <h4>Asset ID: {donation.id}</h4>
-                <p>{donation.updated}</p>
-              </div>
-              <div className={`status-badge ${donation.status.toLowerCase().replace(" ", "-")}`}>
-                {donation.status}
-              </div>
-            </IonCardContent>
-          </IonCard>
-        ))}
-
-        {/* Empty State */}
-<IonCard className="empty-card">
-  <IonCardContent className="empty-card-content">
-    <div className="empty-icon">
-      <IonIcon icon={bagOutline} />  {/* replace with desired icon */}
-    </div>
-    <div className="empty-text">
-      <h4>You haven’t donated yet</h4>
-      <p>Start making a difference today!</p>
-    </div>
-  </IonCardContent>
-</IonCard>
-
+        {!loading && filteredDonations.length > 0 ? (
+          filteredDonations.map((donation) => (
+            <IonCard
+              key={donation.itemID}
+              className="donation-card"
+              button
+              onClick={() => history.push(`/donations/${donation.itemID}`)} // 👈 navigate
+            >
+              <IonCardContent className="donation-item">
+                <div className="donation-icon">
+                  <IonIcon
+                    icon={
+                      donation.itemType.toLowerCase().includes("laptop")
+                        ? laptopOutline
+                        : donation.itemType.toLowerCase().includes("bag")
+                        ? bagOutline
+                        : cubeOutline
+                    }
+                  />
+                </div>
+                <div className="donation-details">
+                  <h4>{donation.itemType}</h4>
+                  <p>Asset ID: {donation.itemID}</p>
+                </div>
+                <div
+                  className={`status-badge ${donation.status
+                    .toLowerCase()
+                    .replace(" ", "-")}`}
+                >
+                  {donation.status}
+                </div>
+              </IonCardContent>
+            </IonCard>
+          ))
+        ) : (
+          !loading && (
+            <IonCard className="empty-card">
+              <IonCardContent className="empty-card-content">
+                <div className="empty-icon">
+                  <IonIcon icon={bagOutline} />
+                </div>
+                <div className="empty-text">
+                  <h4>You haven’t donated yet</h4>
+                  <p>Start making a difference today!</p>
+                </div>
+              </IonCardContent>
+            </IonCard>
+          )
+        )}
 
         {/* Floating Add Donation Button */}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
@@ -118,12 +141,9 @@ const Tab2: React.FC = () => {
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
-
       </IonContent>
     </IonPage>
   );
 };
-
-
 
 export default Tab2;

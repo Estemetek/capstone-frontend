@@ -9,26 +9,84 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-  IonTextarea
-} from '@ionic/react';
-import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import './AddDonation.css';
+  IonTextarea,
+} from "@ionic/react";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { createDonation } from "../services/api"; // ✅ API integration
+import "./AddDonation.css";
 
 const AddDonation: React.FC = () => {
   const history = useHistory();
 
-  const [itemName, setItemName] = useState('');
-  const [category, setCategory] = useState('');
-  const [condition, setCondition] = useState('');
-  const [description, setDescription] = useState('');
+  // --- Load logged-in user from localStorage (set in login.tsx) ---
+  const donorInfo = {
+    name: localStorage.getItem("userName") || "Unknown Donor",
+    email: localStorage.getItem("userEmail") || "unknown@example.com",
+    contactNo: localStorage.getItem("userContact") || "0000000000",
+    id: localStorage.getItem("userId") || undefined, // optional if backend provides user id
+  };
+
+  // --- Form States ---
+  const [itemName, setItemName] = useState("");
+  const [category, setCategory] = useState("");
+  const [condition, setCondition] = useState("");
+  const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [recipientSchool, setRecipientSchool] = useState("");
+  const [recipientContact, setRecipientContact] = useState("");
+  const [images, setImages] = useState<string[]>([]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string>(""); // ✅ store permanent backend QR
 
-  const handleSubmit = () => {
-    console.log({ itemName, category, condition, description, quantity });
-    setIsSubmitted(true); // switch to confirmation view
+  const handleSubmit = async () => {
+    try {
+      const donationPayload = {
+        itemType: itemName,
+        category,
+        condition,
+        quantity,
+        notes: description,
+        images,
+        donorID: donorInfo.id || donorInfo.email,
+        currentOwner: "Organization Warehouse", // default initial owner
+        status: "Pending", // default initial status
+        donorInfo,
+        recipientInfo: {
+          school: recipientSchool,
+          contact: recipientContact,
+        },
+        appraisalValue: 0,
+      };
+
+      const res = await createDonation(donationPayload);
+      console.log("✅ Donation created:", res);
+
+      // ✅ Use backend permanent QR code path
+      if (res.offchain?.qrCodeUrl) {
+        // setQrUrl(`http://localhost:3000${res.offchain.qrCodeUrl}`);
+        setQrUrl(res.offchain.qrCodeUrl);
+      }
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      console.error("❌ Error creating donation:", err);
+      alert(`Failed to submit donation: ${err.message}`);
+    }
+  };
+
+  const resetForm = () => {
+    setItemName("");
+    setCategory("");
+    setCondition("");
+    setDescription("");
+    setQuantity(1);
+    setRecipientSchool("");
+    setRecipientContact("");
+    setImages([]);
+    setIsSubmitted(false);
+    setQrUrl("");
   };
 
   return (
@@ -36,7 +94,7 @@ const AddDonation: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.push('/tabs/tab2')}>Cancel</IonButton>
+            <IonButton onClick={() => history.push("/tabs/tab2")}>Cancel</IonButton>
           </IonButtons>
           <IonTitle>Donations</IonTitle>
         </IonToolbar>
@@ -67,9 +125,10 @@ const AddDonation: React.FC = () => {
                 className="form-box"
                 onIonChange={(e) => setCategory(e.detail.value)}
               >
-                <IonSelectOption value="electronics">Electronics</IonSelectOption>
-                <IonSelectOption value="school">School Essentials</IonSelectOption>
-                <IonSelectOption value="books">Books</IonSelectOption>
+                <IonSelectOption value="electronics">Electronics & Gadgets</IonSelectOption>
+                <IonSelectOption value="school">School Supplies</IonSelectOption>
+                <IonSelectOption value="books">Books & Learning Materials</IonSelectOption>
+                <IonSelectOption value="uniforms">Uniforms & Clothing</IonSelectOption>
               </IonSelect>
             </div>
 
@@ -82,9 +141,10 @@ const AddDonation: React.FC = () => {
                 className="form-box"
                 onIonChange={(e) => setCondition(e.detail.value)}
               >
-                <IonSelectOption value="new">New</IonSelectOption>
-                <IonSelectOption value="working">Working</IonSelectOption>
-                <IonSelectOption value="repairable">Repairable</IonSelectOption>
+                <IonSelectOption value="new">Brand New</IonSelectOption>
+                <IonSelectOption value="gentlyused">Gently Used</IonSelectOption>
+                <IonSelectOption value="usedfunctional">Used, Fully Functional</IonSelectOption>
+                <IonSelectOption value="repairable">Needs Repair/Repairable</IonSelectOption>
               </IonSelect>
             </div>
 
@@ -101,18 +161,70 @@ const AddDonation: React.FC = () => {
             {/* Quantity */}
             <div className="form-group">
               <label className="form-label">Quantity</label>
-              <IonSelect
+              <IonInput
+                type="number"
                 value={quantity}
-                placeholder="1"
+                min="1"
+                step="1"
                 className="form-box"
-                onIonChange={(e) => setQuantity(parseInt(e.detail.value!, 10))}
-              >
-                {[...Array(10)].map((_, i) => (
-                  <IonSelectOption key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
+                onIonChange={(e) => {
+                  const value = parseInt(e.detail.value!, 10);
+                  setQuantity(isNaN(value) || value < 1 ? 1 : value);
+                }}
+              />
+            </div>
+
+            {/* Recipient School */}
+            <div className="form-group">
+              <label className="form-label">Recipient School</label>
+              <IonInput
+                value={recipientSchool}
+                placeholder="Enter recipient school"
+                className="form-box"
+                onIonChange={(e) => setRecipientSchool(e.detail.value!)}
+              />
+            </div>
+
+            {/* Recipient Contact */}
+            <div className="form-group">
+              <label className="form-label">Recipient Contact</label>
+              <IonInput
+                value={recipientContact}
+                placeholder="Enter recipient contact"
+                className="form-box"
+                onIonChange={(e) => setRecipientContact(e.detail.value!)}
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div className="form-group">
+              <label className="form-label">Upload Images</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files) {
+                    Array.from(files).forEach((file) => {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        if (reader.result) {
+                          setImages((prev) => [...prev, reader.result!.toString()]);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    });
+                  }
+                }}
+              />
+              {images.length > 0 && (
+                <div className="preview-images">
+                  {images.map((img, idx) => (
+                    <img key={idx} src={img} alt={`upload-${idx}`} width="100" />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Donate Button */}
@@ -123,7 +235,6 @@ const AddDonation: React.FC = () => {
         ) : (
           /* Confirmation Screen */
           <div className="success-card">
-            {/* Banner Image */}
             <div className="banner-image">
               <img
                 src="https://res.cloudinary.com/dmajhtvmd/image/upload/c_scale/f_auto/dpr_auto/onjme2bzy465j8jle4yi"
@@ -131,31 +242,48 @@ const AddDonation: React.FC = () => {
               />
             </div>
 
-            {/* Thank you box */}
             <div className="success-box">
-              <img
-                src="/assets/logo.png"
-                alt="Logo"
-                className="success-logo"
-              />
-
+              <img src="/assets/logo.png" alt="Logo" className="success-logo" />
               <h2 className="success-title">Thank you for donating!</h2>
               <p className="success-text">
                 Your support helps BrightAid continue its mission of helping students in need.
               </p>
 
-              {/* QR Code */}
-              <div className="qr-code">
-                <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?data=Donation123&size=150x150"
-                  alt="QR Code"
-                />
+              {/* Donation Summary */}
+              <div className="donation-summary">
+                <h3>Donation Details</h3>
+                <p><strong>Item Name:</strong> {itemName}</p>
+                <p><strong>Category:</strong> {category}</p>
+                <p><strong>Condition:</strong> {condition}</p>
+                <p><strong>Quantity:</strong> {quantity}</p>
+                {description && <p><strong>Description:</strong> {description}</p>}
+                {recipientSchool && <p><strong>Recipient School:</strong> {recipientSchool}</p>}
+                {recipientContact && <p><strong>Recipient Contact:</strong> {recipientContact}</p>}
+                {images.length > 0 && (
+                  <div className="submitted-images">
+                    <strong>Uploaded Images:</strong>
+                    <div className="image-preview">
+                      {images.map((img, idx) => (
+                        <img key={idx} src={img} alt={`upload-${idx}`} width="80" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p><strong>Donor Name:</strong> {donorInfo.name}</p>
+                <p><strong>Donor Email:</strong> {donorInfo.email}</p>
+                <p><strong>Donor Contact:</strong> {donorInfo.contactNo}</p>
               </div>
+
+              {/* QR Code (Permanent from backend) */}
+              {qrUrl && (
+                <div className="qr-code">
+                  <img src={qrUrl} alt="QR Code" width="150" />
+                </div>
+              )}
               <p className="qr-text">
                 Scan the QR code to trace and verify your donation progress.
               </p>
 
-              {/* Buttons */}
               <IonButton expand="block" className="download-btn">
                 Download QR
               </IonButton>
@@ -163,7 +291,10 @@ const AddDonation: React.FC = () => {
                 expand="block"
                 fill="outline"
                 className="done-btn"
-                onClick={() => history.push('/tabs/tab2')}
+                onClick={() => {
+                  resetForm();
+                  history.push("/tabs/tab2");
+                }}
               >
                 Done
               </IonButton>

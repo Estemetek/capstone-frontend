@@ -21,6 +21,8 @@ import Tab3 from "./pages/Tab3";
 import Tab4 from "./pages/Tab4";
 import Tab5 from "./pages/Tab5";
 import AddDonation from "./pages/AddDonation";
+import DonationDetail from "./pages/DonationDetail";
+
 
 /* Core CSS required for Ionic components to work */
 import "@ionic/react/css/core.css";
@@ -65,45 +67,54 @@ const App: React.FC = () => (
                 <Route exact path="/tabs/tab4" component={Tab4} />
                 <Route exact path="/tabs/tab5" component={Tab5} />
 
+                {/* ✅ These are now inside the IonTabs so navbar stays */}
+                <Route exact path="/tabs/add-donation" component={AddDonation} />
+                <Route exact path="/tabs/donation/:id" component={DonationDetail} />
+
                 <Redirect exact from="/tabs" to="/tabs/tab1" />
               </IonRouterOutlet>
 
               <IonTabBar slot="bottom">
                 <IonTabButton tab="tab1" href="/tabs/tab1">
-                  <IonIcon aria-hidden="true" icon={home} />
+                  <IonIcon icon={home} />
                   <IonLabel>Home</IonLabel>
                 </IonTabButton>
 
                 <IonTabButton tab="tab2" href="/tabs/tab2">
-                  <IonIcon aria-hidden="true" icon={heart} />
+                  <IonIcon icon={heart} />
                   <IonLabel>Donations</IonLabel>
                 </IonTabButton>
 
                 <IonTabButton tab="tab3" href="/tabs/tab3">
-                  <IonIcon aria-hidden="true" icon={searchCircle} />
+                  <IonIcon icon={searchCircle} />
                   <IonLabel>Trace</IonLabel>
                 </IonTabButton>
 
                 <IonTabButton tab="tab4" href="/tabs/tab4">
-                  <IonIcon aria-hidden="true" icon={person} />
-                  <IonLabel>Profile</IonLabel>
+                  <IonIcon icon={helpCircle} />
+                  <IonLabel>Help</IonLabel>
                 </IonTabButton>
 
                 <IonTabButton tab="tab5" href="/tabs/tab5">
-                  <IonIcon aria-hidden="true" icon={helpCircle} />
-                  <IonLabel>Help</IonLabel>
+                  <IonIcon icon={person} />
+                  <IonLabel>Profile</IonLabel>
                 </IonTabButton>
               </IonTabBar>
             </IonTabs>
           )}
         />
 
+
         {/* Add Donation route */}
         <Route exact path="/add-donation" component={AddDonation} />
+
+        {/* Donation detail route */}
+        <Route exact path="/donations/:id" component={DonationDetail} />
 
         {/* Default route → Login */}
         <Redirect exact from="/" to="/login" />
       </IonRouterOutlet>
+
     </IonReactRouter>
   </IonApp>
 );

@@ -5,161 +5,118 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonAvatar,
   IonIcon,
-  IonInput,
-  IonLabel,
-  IonButton
+  IonInput
 } from '@ionic/react';
 import {
-  notificationsOutline,
   settingsOutline,
-  helpCircleOutline,
-  logOutOutline,
-  createOutline,
+  funnelOutline,
   chevronDownOutline,
-  keyOutline,
-  personRemoveOutline,
-  chevronBackOutline
+  chevronUpOutline
 } from 'ionicons/icons';
-import './Tab4.css';
+import './Tab5.css';
 
 const Tab4: React.FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSettings, setIsSettings] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleFAQ = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          {isSettings ? (
-            <div className="header-with-back">
-              <IonIcon
-                icon={chevronBackOutline}
-                className="back-btn"
-                onClick={() => setIsSettings(false)}
-              />
-              <IonTitle>Settings</IonTitle>
-            </div>
-          ) : (
-            <IonTitle>My Profile</IonTitle>
-          )}
+          <IonTitle>Help</IonTitle>
+          <IonIcon icon={settingsOutline} slot="end" className="help-settings-icon" />
         </IonToolbar>
       </IonHeader>
 
       <IonContent fullscreen>
-        {!isSettings && (
-          <>
-            {/* Profile Avatar */}
-            <div className="profile-header">
-              <IonAvatar className="profile-avatar">
-                <img
-                  src="https://cdnphoto.dantri.com.vn/FTH2E5KX4ObLWPDl9xP3VO8ZDO4=/thumb_w/1020/2025/04/08/jennie-2-1744084779771.jpg"
-                  alt="Profile"
-                />
-              </IonAvatar>
+        <div className="help-container">
+          <h2 className="help-heading">How Can We Help You?</h2>
+          <hr className="help-divider" />
 
-              {/* Edit Profile button */}
+          {/* Filter Buttons */}
+          <div className="help-filters">
+            <button className="filter-btn active">FAQ</button>
+            <button className="filter-btn">Contact Us</button>
+            <button className="filter-btn active">General</button>
+            <button className="filter-btn">Account</button>
+            <button className="filter-btn">Services</button>
+          </div>
+
+          {/* Editable Search Bar */}
+          <div className="help-search">
+            <IonInput placeholder="Search" className="search-input" />
+            <div className="search-btn">
+              <IonIcon icon={funnelOutline} />
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="faq-section">
+            {/* Q1 */}
+            <div className="faq-item" onClick={() => toggleFAQ(0)}>
+              <p className="faq-question">What is this app about?</p>
               <IonIcon
-                icon={createOutline}
-                className="edit-profile-btn"
-                onClick={() => setIsEditing(!isEditing)}
+                icon={openIndex === 0 ? chevronUpOutline : chevronDownOutline}
+                className="faq-chevron"
               />
             </div>
+            {openIndex === 0 && (
+              <p className="faq-answer">
+                This app allows donors, schools, and partner organizations to trace donated
+                educational resources through a blockchain-based system.
+              </p>
+            )}
 
-            {/* User info */}
-            <div className="profile-info">
-              <h2 className="profile-name">Jennie Kim</h2>
-              <p className="profile-id">ID: 25030024</p>
+            {/* Q2 */}
+            <div className="faq-item" onClick={() => toggleFAQ(1)}>
+              <p className="faq-question">How do I make a donation?</p>
+              <IonIcon
+                icon={openIndex === 1 ? chevronUpOutline : chevronDownOutline}
+                className="faq-chevron"
+              />
             </div>
-          </>
-        )}
+            {openIndex === 1 && (
+              <p className="faq-answer">
+                To make a donation, go to the Donations tab, fill out the required details,
+                and submit your item. A QR code will be generated for tracking.
+              </p>
+            )}
 
-        {/* If editing profile */}
-        {isEditing && !isSettings ? (
-          <div className="form-container">
-            <IonLabel>Full Name</IonLabel>
-            <IonInput
-              value="Jennie Kim"
-              placeholder="Enter full name"
-              className="input-box"
-            />
+            {/* Q3 */}
+            <div className="faq-item" onClick={() => toggleFAQ(2)}>
+              <p className="faq-question">How can I track the status of my donation?</p>
+              <IonIcon
+                icon={openIndex === 2 ? chevronUpOutline : chevronDownOutline}
+                className="faq-chevron"
+              />
+            </div>
+            {openIndex === 2 && (
+              <p className="faq-answer">
+                You can track your donation by scanning the QR code or checking the Trace
+                tab in the app for real-time status updates.
+              </p>
+            )}
 
-            <IonLabel>Email</IonLabel>
-            <IonInput
-              value="Rockwithjennie@Gmail.Com"
-              placeholder="Enter email"
-              className="input-box"
-            />
-
-            <IonLabel>Mobile Number</IonLabel>
-            <IonInput
-              value="+123 4567 890"
-              placeholder="Enter mobile number"
-              className="input-box"
-            />
-
-            <IonButton
-              expand="block"
-              className="update-btn"
-              onClick={() => setIsEditing(false)}
-            >
-              Update Profile
-            </IonButton>
+            {/* Q4 */}
+            <div className="faq-item" onClick={() => toggleFAQ(3)}>
+              <p className="faq-question">What if the QR code is not working?</p>
+              <IonIcon
+                icon={openIndex === 3 ? chevronUpOutline : chevronDownOutline}
+                className="faq-chevron"
+              />
+            </div>
+            {openIndex === 3 && (
+              <p className="faq-answer">
+                If your QR code is not working, please contact our support team through
+                the Help tab or use the item ID to search in the Trace section.
+              </p>
+            )}
           </div>
-        ) : isSettings ? (
-          /* Settings View */
-          <div className="settings-list">
-            <div className="settings-row">
-              <IonIcon icon={notificationsOutline} className="settings-icon" />
-              <p className="settings-text">Notification Settings</p>
-              <IonIcon icon={chevronDownOutline} className="settings-chevron" />
-            </div>
-
-            <div className="settings-row">
-              <IonIcon icon={keyOutline} className="settings-icon" />
-              <p className="settings-text">Password Settings</p>
-              <IonIcon icon={chevronDownOutline} className="settings-chevron" />
-            </div>
-
-            <div className="settings-row">
-              <IonIcon icon={personRemoveOutline} className="settings-icon" />
-              <p className="settings-text">Delete Account</p>
-              <IonIcon icon={chevronDownOutline} className="settings-chevron" />
-            </div>
-          </div>
-        ) : (
-          /* Default menu list */
-          <div className="menu-list">
-            <button className="menu-row" onClick={() => console.log('Notification clicked')}>
-              <div className="circle-btn">
-                <IonIcon icon={notificationsOutline} />
-              </div>
-              <p className="menu-text">Notification</p>
-            </button>
-
-            <button className="menu-row" onClick={() => setIsSettings(true)}>
-              <div className="circle-btn">
-                <IonIcon icon={settingsOutline} />
-              </div>
-              <p className="menu-text">Settings</p>
-            </button>
-
-            <button className="menu-row" onClick={() => console.log('Help clicked')}>
-              <div className="circle-btn">
-                <IonIcon icon={helpCircleOutline} />
-              </div>
-              <p className="menu-text">Help</p>
-            </button>
-
-            <button className="menu-row" onClick={() => console.log('Logout clicked')}>
-              <div className="circle-btn">
-                <IonIcon icon={logOutOutline} />
-              </div>
-              <p className="menu-text">Logout</p>
-            </button>
-          </div>
-        )}
+        </div>
       </IonContent>
     </IonPage>
   );
