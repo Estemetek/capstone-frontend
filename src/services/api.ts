@@ -90,9 +90,6 @@ async function authFetch(url: string, options: RequestInit = {}) {
 // -----------------------------
 // Donation APIs
 // -----------------------------
-// export async function getDonations(): Promise<BlockchainDonation[]> {
-//   return authFetch(`${API_BASE_URL}/donations`);
-// }
 
 export async function getDonations(donorID?: string): Promise<BlockchainDonation[]> {
   const url = donorID

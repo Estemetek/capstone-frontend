@@ -13,16 +13,18 @@ import { Redirect, Route } from "react-router-dom";
 
 import { home, heart, searchCircle, person, helpCircle } from "ionicons/icons";
 
-import Login from "./pages/login";
-import Signup from "./pages/signup";
-import Tab1 from "./pages/Tab1";
-import Tab2 from "./pages/Tab2";
-import Tab3 from "./pages/Tab3";
-import Tab4 from "./pages/Tab4";
-import Tab5 from "./pages/Tab5";
-import AddDonation from "./pages/AddDonation";
-import DonationDetail from "./pages/DonationDetail";
+// 🔹 Shared pages
+import Login from "./pages/shared/login";
+import Signup from "./pages/shared/signup";
 
+// 🔹 Donor pages
+import Tab1 from "./pages/donor/Tab1";
+import Tab2 from "./pages/donor/Tab2";
+import Tab3 from "./pages/donor/Tab3";
+import Tab4 from "./pages/donor/Tab4";
+import Tab5 from "./pages/donor/Tab5";
+import AddDonation from "./pages/donor/AddDonation";
+import DonationDetail from "./pages/donor/DonationDetail";
 
 /* Core CSS required for Ionic components to work */
 import "@ionic/react/css/core.css";
@@ -32,7 +34,7 @@ import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
 
-/* Optional CSS utils that can be commented out */
+/* Optional CSS utils */
 import "@ionic/react/css/padding.css";
 import "@ionic/react/css/float-elements.css";
 import "@ionic/react/css/text-alignment.css";
@@ -49,13 +51,11 @@ const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
       <IonRouterOutlet>
-        {/* Login page */}
+        {/* Shared routes */}
         <Route path="/login" component={Login} exact />
-
-        {/* Signup page */}
         <Route path="/signup" component={Signup} exact />
 
-        {/* Tabs (main app) */}
+        {/* Donor routes with tabs */}
         <Route
           path="/tabs"
           render={() => (
@@ -66,8 +66,6 @@ const App: React.FC = () => (
                 <Route exact path="/tabs/tab3" component={Tab3} />
                 <Route exact path="/tabs/tab4" component={Tab4} />
                 <Route exact path="/tabs/tab5" component={Tab5} />
-
-                {/* ✅ These are now inside the IonTabs so navbar stays */}
                 <Route exact path="/tabs/add-donation" component={AddDonation} />
                 <Route exact path="/tabs/donation/:id" component={DonationDetail} />
 
@@ -104,17 +102,9 @@ const App: React.FC = () => (
           )}
         />
 
-
-        {/* Add Donation route */}
-        <Route exact path="/add-donation" component={AddDonation} />
-
-        {/* Donation detail route */}
-        <Route exact path="/donations/:id" component={DonationDetail} />
-
-        {/* Default route → Login */}
+        {/* Default route */}
         <Redirect exact from="/" to="/login" />
       </IonRouterOutlet>
-
     </IonReactRouter>
   </IonApp>
 );

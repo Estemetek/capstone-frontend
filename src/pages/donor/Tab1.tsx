@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           </IonRow>
         </IonGrid>
 
-      <IonButton expand="block" className="donate-btn">
+      <IonButton expand="block" className="donate-btn" routerLink="/tabs/tab2">
         Donate Now
       </IonButton>
 

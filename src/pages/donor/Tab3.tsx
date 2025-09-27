@@ -20,7 +20,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
-import { getDonationById, getDonationsByCategory, DonationResponse, OffchainDonation } from "../services/api";
+import { getDonationById, getDonationsByCategory, DonationResponse, OffchainDonation } from "../../services/api";
 import { QRCodeCanvas } from "qrcode.react";
 
 const HISTORY_KEY = "scanHistory";

@@ -19,7 +19,7 @@ import {
 } from "@ionic/react";
 import { add, laptopOutline, cubeOutline, bagOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { getDonations, BlockchainDonation } from "../services/api";
+import { getDonations, BlockchainDonation } from "../../services/api";
 import "./Tab2.css";
 
 const Tab2: React.FC = () => {
@@ -91,7 +91,7 @@ const Tab2: React.FC = () => {
               key={donation.itemID}
               className="donation-card"
               button
-              onClick={() => history.push(`/donations/${donation.itemID}`)} // 👈 navigate
+              onClick={() => history.push(`/tabs/donation/${donation.itemID}`)} // 👈 navigate
             >
               <IonCardContent className="donation-item">
                 <div className="donation-icon">
@@ -137,7 +137,7 @@ const Tab2: React.FC = () => {
 
         {/* Floating Add Donation Button */}
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={() => history.push("/add-donation")} color="primary">
+          <IonFabButton onClick={() => history.push("/tabs/add-donation")} color="primary">
             <IonIcon icon={add} />
           </IonFabButton>
         </IonFab>
