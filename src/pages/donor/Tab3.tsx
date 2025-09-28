@@ -34,7 +34,7 @@ const Tab3: React.FC = () => {
   const [history, setHistory] = useState<
     { id: string; time: string; itemType: string }[]
   >([]);
-  const [categoryResults, setCategoryResults] = useState<OffchainDonation[]>([]);
+  const [categoryResults, setCategoryResults] = useState<DonationResponse[]>([]);
 
   // ✅ Load history from localStorage on mount
   useEffect(() => {
@@ -254,7 +254,8 @@ const Tab3: React.FC = () => {
                   <p><strong>Status:</strong> {result.blockchain.status}</p>
                   <p><strong>Condition:</strong> {result.blockchain.condition}</p>
                   <p><strong>Owner:</strong> {result.blockchain.currentOwner}</p>
-                  <p><strong>Donor:</strong> {result.offchain.donorInfo.name}</p>
+                  {/* <p><strong>Donor:</strong> {result.offchain.donorInfo.name}</p> */}
+                  <p><strong>Blockchain Donor ID:</strong> {result.blockchain.donorID}</p>
                   <p><strong>Date Donated:</strong>{" "}
                     {new Date(result.offchain.createdAt || result.blockchain.timestamp)
                       .toLocaleString()}
@@ -279,17 +280,18 @@ const Tab3: React.FC = () => {
                 {categoryResults.map((item, idx) => (
                   <IonCard key={idx}>
                     <IonCardContent>
-                      <h3>{item.itemType}</h3>
-                      <p><strong>ID:</strong> {item.itemID}</p>
-                      <p><strong>Condition:</strong> {item.condition}</p>
-                      <p><strong>Category:</strong> {item.category}</p>
-                      <p><strong>Donor:</strong> {item.donorInfo.name}</p>
+                      <h3>{item.blockchain?.itemType || item.offchain.itemType}</h3>
+                      <p><strong>ID:</strong> {item.blockchain?.itemID || item.offchain.itemID}</p>
+                      <p><strong>Status:</strong> {item.blockchain?.status || "N/A"}</p>
+                      <p><strong>Condition:</strong> {item.offchain.condition}</p>
+                      <p><strong>Category:</strong> {item.offchain.category}</p>
+                      <p><strong>Blockchain Donor ID:</strong> {item.blockchain?.donorID || "N/A"}</p>
                       <p><strong>Date Donated:</strong>{" "}
-                        {new Date(item.createdAt || "").toLocaleString()}
+                        {new Date(item.offchain.createdAt || item.blockchain?.timestamp || "").toLocaleString()}
                       </p>
-                      {item.qrCodeUrl && (
+                      {item.offchain.qrCodeUrl && (
                         <img
-                          src={item.qrCodeUrl}
+                          src={item.offchain.qrCodeUrl}
                           alt="Donation QR"
                           style={{ marginTop: "10px", maxWidth: "150px" }}
                         />

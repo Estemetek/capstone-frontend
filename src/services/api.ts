@@ -151,8 +151,13 @@ export async function getDonationById(id: string): Promise<DonationResponse> {
   return authFetch(`${API_BASE_URL}/donations/${id}`);
 }
 
+// export async function getDonationsByCategory(
+//   category: string
+// ): Promise<OffchainDonation[]> {
+//   return authFetch(`${API_BASE_URL}/donations/category/${category}`);
+// }
 export async function getDonationsByCategory(
   category: string
-): Promise<OffchainDonation[]> {
+): Promise<DonationResponse[]> {
   return authFetch(`${API_BASE_URL}/donations/category/${category}`);
 }
