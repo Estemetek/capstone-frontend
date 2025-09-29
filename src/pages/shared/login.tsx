@@ -6,7 +6,7 @@ import {
   IonButton
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { login } from "../../services/api"; //  your API call
+import { login } from "../../services/api"; // your API call
 import "./login.css";
 
 const Login: React.FC = () => {
@@ -19,24 +19,37 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 🔹 Check for default admin account first
+    if (email === "admin@example.com" && password === "admin") {
+      localStorage.setItem("userRole", "admin");
+      localStorage.setItem("userName", "Administrator");
+      localStorage.setItem("userEmail", "admin@example.com");
+
+      console.log("✅ Admin logged in");
+      history.push("/admin/home");
+      return;
+    }
+
     try {
+      // Otherwise, call your normal API for donors
       const res = await login(email, password);
 
-      // ✅ Save token + user info for later API calls
+      // Save token + user info
       localStorage.setItem("token", res.token);
       localStorage.setItem("userId", res.user.id);
       localStorage.setItem("userName", res.user.name);
-      localStorage.setItem("userEmail", res.user.email ?? email); // fallback if backend doesn’t send email
-      localStorage.setItem("userContact", (res.user as any).contactNo ?? ""); // optional, update later if needed
+      localStorage.setItem("userEmail", res.user.email ?? email);
+      localStorage.setItem("userContact", (res.user as any).contactNo ?? "");
       localStorage.setItem("userRole", res.user.role);
 
-      console.log("✅ Logged in:", res);
+      console.log("✅ Donor logged in:", res);
 
-      // Redirect after login
+      // Redirect donor side
       history.push("/tabs/tab1");
     } catch (err: any) {
       console.error("❌ Login failed:", err);
-      setError("Username or password incorrect"); // shows below password field
+      setError("Username or password incorrect");
     }
   };
 
@@ -71,7 +84,6 @@ const Login: React.FC = () => {
               required
             />
 
-            {/* 🔴 Error message below password field */}
             {error && <p className="error-text">{error}</p>}
 
             <IonButton expand="block" className="login-button" type="submit">

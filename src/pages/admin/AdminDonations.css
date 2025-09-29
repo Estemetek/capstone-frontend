@@ -1,0 +1,405 @@
+/* Page Title */
+.page-heading {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  margin: 0 5px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.register-btn {
+  background-color: #3880ff; /* Primary Blue */
+  color: #fff;
+}
+
+.status-btn {
+  background-color: #7aa9d6; /* Lighter Blue */
+  color: #fff;
+}
+
+/* Section Title */
+.section-title {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Donations Section */
+.section-title {
+  margin: 16px 0 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #000;
+}
+
+/* Donations List */
+.donations-list {
+  background: #fff; /* clean white background */
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.donations-list ion-item {
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --border-color: #ddd; /* light gray divider */
+  --border-width: 0 0 2px 0; /* bottom divider only */
+}
+
+.donations-list ion-item:last-child {
+  --border-width: 0; /* remove divider on last item */
+}
+
+.donations-list h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: #000;
+}
+
+.donations-list p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666; /* gray for description */
+}
+
+.donations-list ion-note {
+  font-size: 0.8rem;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.arrow-icon {
+  font-size: 16px;
+  margin-left: 6px;
+  color: #000;
+}
+
+
+/* Arrow Icon */
+.arrow-icon {
+  font-size: 18px;
+  margin-left: 6px;
+  vertical-align: middle;
+  color: #666;
+}
+
+/* Page Title */
+.page-heading {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  margin: 0 5px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.register-btn {
+  background-color: #3880ff; /* Primary Blue */
+  color: #fff;
+}
+
+.status-btn {
+  background-color: #7aa9d6; /* Lighter Blue */
+  color: #fff;
+}
+
+/* Section Title */
+.section-title {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Donations List */
+.donations-list ion-item {
+  --padding-start: 10px;
+  --inner-padding-end: 10px;
+}
+
+.donations-list h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.donations-list p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Arrow Icon */
+.arrow-icon {
+  font-size: 18px;
+  margin-left: 6px;
+  vertical-align: middle;
+  color: #666;
+}
+
+/* ----------- FORM STYLES ----------- */
+/* Form Grid (2 columns for first row) */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Input styling */
+ion-input, ion-textarea, ion-select {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* Section subtitle (like Document Verification) */
+.section-subtitle {
+  margin: 12px 0 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Upload Box */
+.upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  margin: 12px 0;
+  color: #666;
+  background: #fafafa;
+}
+
+.upload-icon {
+  font-size: 28px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancel-btn {
+  --background: #ccc;
+  --color: #000;
+  border-radius: 6px;
+}
+
+.submit-btn {
+  --background: #003366;
+  --color: #fff;
+  border-radius: 6px;
+}
+
+/* Donation Info */
+.donation-info {
+  margin-bottom: 16px;
+}
+.donation-info h2 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 20px;
+}
+.donation-info p {
+  margin: 2px 0 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* Status Steps */
+.status-steps {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+.status-steps .step {
+  text-align: center;
+  flex: 1;
+}
+.status-steps .step p {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  color: #666;
+}
+.status-steps .circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 auto;
+}
+.status-steps .active ion-icon {
+  font-size: 22px;
+  color: #3880ff;
+}
+
+/* Buttons reused */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+.cancel-btn {
+  --background: #6B6E7A;
+  --color: #fff;
+}
+.submit-btn {
+  --background: #003366;
+  --color: #fff;
+}
+/* Donation Management Header */
+/* Donation Management & Register Donor Header */
+.donation-header {
+  background-color: #B9D5EA; /* light blue highlight */
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+/* Header reuse */
+.donation-header {
+  background-color: #B9D5EA;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+/* Donor Info */
+.donation-info {
+  margin-bottom: 16px;
+}
+.donation-info h3 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1rem;
+}
+.donation-info p {
+  margin: 2px 0 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* Status Steps */
+/* Status Steps */
+.status-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.status-steps .step {
+  text-align: center;
+  position: relative;
+  flex: 1;
+}
+
+.status-steps .step p {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  color: #666;
+}
+
+/* Circles */
+.status-steps .circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.status-steps .circle.checked {
+  background: #003366;
+  border-color: #003366;
+}
+
+.status-steps .circle ion-icon {
+  font-size: 16px;
+  color: #fff;
+}
+
+/* Connecting Lines */
+.status-steps .line {
+  flex: 1;
+  height: 2px;
+  background: #ccc;
+  margin: 0 4px;
+}
+
+.status-steps .line.active {
+  background: #003366; /* blue line after active step */
+}
+
+/* Active Step Label */
+.status-steps .active p {
+  color: #003366;
+  font-weight: 600;
+}
+/* IonSelect (Assign Recipient) */
+ion-select {
+  --border-radius: 6px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+  --border-color: #ccc;
+  --color: #444;
+  font-weight: 600; /* bold selected text */
+  margin-top: 8px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+ion-select::part(icon) {
+  color: #000; /* dropdown arrow black */
+  font-size: 18px;
+}
+
+/* Label above select */
+ion-select::part(label) {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #000;
+}
