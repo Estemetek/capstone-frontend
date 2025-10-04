@@ -13,7 +13,8 @@ import {
 } from "@ionic/react";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { createDonation } from "../../services/api"; // ✅ API integration
+import { createDonation } from "../../services/api"; //  Your blockchain/offchain API
+import { supabase } from "../../supabaseClient"; //  Supabase initialized client
 import "./AddDonation.css";
 
 const AddDonation: React.FC = () => {
@@ -24,7 +25,7 @@ const AddDonation: React.FC = () => {
     name: localStorage.getItem("userName") || "Unknown Donor",
     email: localStorage.getItem("userEmail") || "unknown@example.com",
     contactNo: localStorage.getItem("userContact") || "0000000000",
-    id: localStorage.getItem("userId") || undefined, // optional if backend provides user id
+    id: localStorage.getItem("userId") || undefined,
   };
 
   // --- Form States ---
@@ -35,23 +36,55 @@ const AddDonation: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const [recipientSchool, setRecipientSchool] = useState("");
   const [recipientContact, setRecipientContact] = useState("");
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]); // final uploaded URLs
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // raw files to upload
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [qrUrl, setQrUrl] = useState<string>(""); // ✅ store permanent backend QR
+  const [qrUrl, setQrUrl] = useState<string>("");
+
+  // --- Upload file to Supabase and return public URL ---
+  const uploadToSupabase = async (file: File) => {
+    const filePath = `public/${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("donation-images") // 👈 must match your Supabase bucket
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("❌ Upload failed:", error.message);
+      throw error;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("donation-images")
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  };
 
   const handleSubmit = async () => {
     try {
+      // ✅ First upload all files
+      const uploadedUrls: string[] = [];
+      for (const file of selectedFiles) {
+        const url = await uploadToSupabase(file);
+        uploadedUrls.push(url);
+      }
+
+      // ✅ Build donation payload
       const donationPayload = {
         itemType: itemName,
         category,
         condition,
         quantity,
         notes: description,
-        images,
+        images: uploadedUrls, // saved Supabase URLs
         donorID: donorInfo.id || donorInfo.email,
-        currentOwner: "Organization Warehouse", // default initial owner
-        status: "Pending", // default initial status
+        currentOwner: "Organization Warehouse",
+        status: "Pending",
         donorInfo,
         recipientInfo: {
           school: recipientSchool,
@@ -63,12 +96,11 @@ const AddDonation: React.FC = () => {
       const res = await createDonation(donationPayload);
       console.log("✅ Donation created:", res);
 
-      // ✅ Use backend permanent QR code path
       if (res.offchain?.qrCodeUrl) {
-        // setQrUrl(`http://localhost:3000${res.offchain.qrCodeUrl}`);
         setQrUrl(res.offchain.qrCodeUrl);
       }
 
+      setImages(uploadedUrls);
       setIsSubmitted(true);
     } catch (err: any) {
       console.error("❌ Error creating donation:", err);
@@ -85,6 +117,7 @@ const AddDonation: React.FC = () => {
     setRecipientSchool("");
     setRecipientContact("");
     setImages([]);
+    setSelectedFiles([]);
     setIsSubmitted(false);
     setQrUrl("");
   };
@@ -94,7 +127,9 @@ const AddDonation: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton onClick={() => history.push("/tabs/tab2")}>Cancel</IonButton>
+            <IonButton onClick={() => history.push("/tabs/tab2")}>
+              Cancel
+            </IonButton>
           </IonButtons>
           <IonTitle>Donations</IonTitle>
         </IonToolbar>
@@ -125,10 +160,18 @@ const AddDonation: React.FC = () => {
                 className="form-box"
                 onIonChange={(e) => setCategory(e.detail.value)}
               >
-                <IonSelectOption value="electronics">Electronics & Gadgets</IonSelectOption>
-                <IonSelectOption value="school">School Supplies</IonSelectOption>
-                <IonSelectOption value="books">Books & Learning Materials</IonSelectOption>
-                <IonSelectOption value="uniforms">Uniforms & Clothing</IonSelectOption>
+                <IonSelectOption value="electronics">
+                  Electronics & Gadgets
+                </IonSelectOption>
+                <IonSelectOption value="school">
+                  School Supplies
+                </IonSelectOption>
+                <IonSelectOption value="books">
+                  Books & Learning Materials
+                </IonSelectOption>
+                <IonSelectOption value="uniforms">
+                  Uniforms & Clothing
+                </IonSelectOption>
               </IonSelect>
             </div>
 
@@ -143,12 +186,16 @@ const AddDonation: React.FC = () => {
               >
                 <IonSelectOption value="new">Brand New</IonSelectOption>
                 <IonSelectOption value="gentlyused">Gently Used</IonSelectOption>
-                <IonSelectOption value="usedfunctional">Used, Fully Functional</IonSelectOption>
-                <IonSelectOption value="repairable">Needs Repair/Repairable</IonSelectOption>
+                <IonSelectOption value="usedfunctional">
+                  Used, Fully Functional
+                </IonSelectOption>
+                <IonSelectOption value="repairable">
+                  Needs Repair/Repairable
+                </IonSelectOption>
               </IonSelect>
             </div>
 
-            {/* Condition Description */}
+            {/* Description */}
             <div className="form-group">
               <IonTextarea
                 value={description}
@@ -206,15 +253,11 @@ const AddDonation: React.FC = () => {
                 onChange={(e) => {
                   const files = e.target.files;
                   if (files) {
-                    Array.from(files).forEach((file) => {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        if (reader.result) {
-                          setImages((prev) => [...prev, reader.result!.toString()]);
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    });
+                    setSelectedFiles(Array.from(files));
+                    const previews = Array.from(files).map((file) =>
+                      URL.createObjectURL(file)
+                    );
+                    setImages(previews); // preview before uploading
                   }
                 }}
               />
@@ -228,7 +271,11 @@ const AddDonation: React.FC = () => {
             </div>
 
             {/* Donate Button */}
-            <IonButton expand="block" className="donate-button" onClick={handleSubmit}>
+            <IonButton
+              expand="block"
+              className="donate-button"
+              onClick={handleSubmit}
+            >
               Donate
             </IonButton>
           </>
@@ -246,7 +293,8 @@ const AddDonation: React.FC = () => {
               <img src="/assets/logo.png" alt="Logo" className="success-logo" />
               <h2 className="success-title">Thank you for donating!</h2>
               <p className="success-text">
-                Your support helps BrightAid continue its mission of helping students in need.
+                Your support helps BrightAid continue its mission of helping
+                students in need.
               </p>
 
               {/* Donation Summary */}
@@ -257,8 +305,12 @@ const AddDonation: React.FC = () => {
                 <p><strong>Condition:</strong> {condition}</p>
                 <p><strong>Quantity:</strong> {quantity}</p>
                 {description && <p><strong>Description:</strong> {description}</p>}
-                {recipientSchool && <p><strong>Recipient School:</strong> {recipientSchool}</p>}
-                {recipientContact && <p><strong>Recipient Contact:</strong> {recipientContact}</p>}
+                {recipientSchool && (
+                  <p><strong>Recipient School:</strong> {recipientSchool}</p>
+                )}
+                {recipientContact && (
+                  <p><strong>Recipient Contact:</strong> {recipientContact}</p>
+                )}
                 {images.length > 0 && (
                   <div className="submitted-images">
                     <strong>Uploaded Images:</strong>
@@ -274,7 +326,6 @@ const AddDonation: React.FC = () => {
                 <p><strong>Donor Contact:</strong> {donorInfo.contactNo}</p>
               </div>
 
-              {/* QR Code (Permanent from backend) */}
               {qrUrl && (
                 <div className="qr-code">
                   <img src={qrUrl} alt="QR Code" width="150" />

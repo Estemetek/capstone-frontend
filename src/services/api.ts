@@ -98,12 +98,12 @@ export async function getDonations(donorID?: string): Promise<BlockchainDonation
   return authFetch(url);
 }
 
+// createDonation (revised)
 export async function createDonation(
   donationData: Partial<
     OffchainDonation & { donorID: string; currentOwner: string; status: string }
   >
 ): Promise<DonationResponse> {
-  // ✅ Always inject donor info from localStorage
   const donorID = localStorage.getItem("userId") || "";
   const donorName = localStorage.getItem("userName") || "Unknown Donor";
   const donorEmail = localStorage.getItem("userEmail") || "unknown@example.com";
@@ -119,6 +119,8 @@ export async function createDonation(
         email: donorEmail,
         contactNo: donorContact,
       },
+      // 👇 ensure images are only URLs now
+      images: donationData.images || [],
     }),
   });
 }
