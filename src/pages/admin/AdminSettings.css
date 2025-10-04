@@ -1,0 +1,56 @@
+/* User Info Section */
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.user-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+  color: #000;
+}
+
+.user-info ion-text {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Logout Button */
+.logout-btn {
+  --background: #555;      /* darker gray for emphasis */
+  --color: #fff;
+  border-radius: 6px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 0 12px;
+  height: 32px;
+}
+
+/* Section Headers */
+/* Section Headers */
+.list-header {
+  font-size: 0.9rem;         /* slightly bigger */
+  font-weight: 700;          /* strong bold */
+  color: #000;               /* solid black */
+  margin: 14px 16px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+/* Settings List Items */
+.settings-list ion-item {
+  --padding-start: 16px;
+  --inner-padding-end: 12px;
+  font-size: 0.95rem;
+  color: #000;
+}
+
+.settings-list ion-item::part(native) {
+  min-height: 44px; /* keep rows compact */
+}

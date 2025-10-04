@@ -1,0 +1,158 @@
+/* Card Styles */
+.dashboard-card {
+  text-align: center;
+  border-radius: 12px;
+  color: #fff;
+  box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+  padding: 12px 0;
+}
+
+.blue-card {
+  background-color: #7aa9d6;
+}
+
+.gray-card {
+  background-color: #6B6E7A;
+}
+
+.dashboard-icon {
+  font-size: 40px;
+  margin-bottom: 6px;
+  color: #0b2e5e; /* dark blue */
+}
+
+.card-number {
+  margin: 5px 0 2px 0;
+  font-size: 40px;     /* big numbers */
+  font-weight: 800;    /* extra bold */
+  line-height: 1.2;
+}
+
+.card-label {
+  margin: 0;
+  font-size: 1.6rem;   /* big text */
+  font-weight: 700;    /* bold */
+  line-height: 1.2;
+}
+
+
+/* Section Heading */
+.page-heading {
+  font-size: 2.5rem;   /* Bigger dashboard title */
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #000;         /* ensure it's black */
+}
+
+.section-title {
+  margin-top: 20px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 2rem;     /* Bigger Recent Activity title */
+  color: #000;
+}
+
+
+/* Activity List */
+.activity-list ion-item {
+  --padding-start: 10px;
+  --inner-padding-end: 10px;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-badge.delivered {
+  background-color: #3880ff; /* Ionic primary blue */
+}
+
+.status-badge.in-transit {
+  background-color: #999;
+}
+
+
+/* Search Container */
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #1e3d78; /* dark blue border */
+  border-radius: 30px;
+  overflow: hidden;
+  margin: 10px 0 16px;
+  height: 45px; /* fixed height for consistency */
+}
+
+/* Style the searchbar inside */
+.search-container ion-searchbar {
+  --background: transparent;
+  --box-shadow: none;
+  --border-radius: 0;
+  --placeholder-color: #444;
+  flex: 1;
+  margin: 0;
+  padding: 0 8px;
+  font-size: 0.95rem;
+  height: 100%; /* match container height */
+}
+
+/* Remove Ionic's inner box */
+.search-container .searchbar-input-container {
+  border: none !important;
+}
+
+/* Filter Button */
+.filter-btn {
+  background-color: #0b2e5e; /* dark blue */
+  border: none;
+  width: 36px;   /* slightly smaller than container height */
+  height: 36px;
+  border-radius: 50%; /* makes it a circle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+
+
+
+/* Right column (date + status stacked) */
+.note-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.85rem;
+}
+
+/* Date styling */
+.note-date {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+/* Status badge */
+.note-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.note-status.delivered {
+  background-color: #3880ff; /* Ionic primary blue */
+}
+
+.note-status.in-transit {
+  background-color: #999;
+}

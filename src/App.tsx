@@ -11,13 +11,13 @@ import {
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 
-import { home, heart, searchCircle, person, helpCircle } from "ionicons/icons";
+import { home, heart, searchCircle, person, helpCircle, settings } from "ionicons/icons";
 
-// 🔹 Shared pages
+// Shared pages
 import Login from "./pages/shared/login";
 import Signup from "./pages/shared/signup";
 
-// 🔹 Donor pages
+// Donor pages
 import Tab1 from "./pages/donor/Tab1";
 import Tab2 from "./pages/donor/Tab2";
 import Tab3 from "./pages/donor/Tab3";
@@ -26,23 +26,22 @@ import Tab5 from "./pages/donor/Tab5";
 import AddDonation from "./pages/donor/AddDonation";
 import DonationDetail from "./pages/donor/DonationDetail";
 
-/* Core CSS required for Ionic components to work */
-import "@ionic/react/css/core.css";
+// Admin pages
+import AdminHome from "./pages/admin/AdminHome";
+import AdminDonations from "./pages/admin/AdminDonations";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 
-/* Basic CSS for apps built with Ionic */
+import "@ionic/react/css/core.css";
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
-
-/* Optional CSS utils */
 import "@ionic/react/css/padding.css";
 import "@ionic/react/css/float-elements.css";
 import "@ionic/react/css/text-alignment.css";
 import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
-
-/* Theme variables */
 import "./theme/variables.css";
 
 setupIonicReact();
@@ -68,7 +67,6 @@ const App: React.FC = () => (
                 <Route exact path="/tabs/tab5" component={Tab5} />
                 <Route exact path="/tabs/add-donation" component={AddDonation} />
                 <Route exact path="/tabs/donation/:id" component={DonationDetail} />
-
                 <Redirect exact from="/tabs" to="/tabs/tab1" />
               </IonRouterOutlet>
 
@@ -77,25 +75,56 @@ const App: React.FC = () => (
                   <IonIcon icon={home} />
                   <IonLabel>Home</IonLabel>
                 </IonTabButton>
-
                 <IonTabButton tab="tab2" href="/tabs/tab2">
                   <IonIcon icon={heart} />
                   <IonLabel>Donations</IonLabel>
                 </IonTabButton>
-
                 <IonTabButton tab="tab3" href="/tabs/tab3">
                   <IonIcon icon={searchCircle} />
                   <IonLabel>Trace</IonLabel>
                 </IonTabButton>
-
                 <IonTabButton tab="tab4" href="/tabs/tab4">
                   <IonIcon icon={helpCircle} />
                   <IonLabel>Help</IonLabel>
                 </IonTabButton>
-
                 <IonTabButton tab="tab5" href="/tabs/tab5">
                   <IonIcon icon={person} />
                   <IonLabel>Profile</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          )}
+        />
+
+        {/* Admin routes with tabs */}
+        <Route
+          path="/admin"
+          render={() => (
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/admin/home" component={AdminHome} />
+                <Route exact path="/admin/donations" component={AdminDonations} />
+                <Route exact path="/admin/analytics" component={AdminAnalytics} />
+                <Route exact path="/admin/settings" component={AdminSettings} />
+                <Redirect exact from="/admin" to="/admin/home" />
+              </IonRouterOutlet>
+
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="admin-home" href="/admin/home">
+                  <IonIcon icon={home} />
+                  <IonLabel>Home</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="admin-donations" href="/admin/donations">
+                  <IonIcon icon={heart} />
+                  <IonLabel>Donations</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="admin-analytics" href="/admin/analytics">
+                  <IonIcon icon={searchCircle} />
+                  <IonLabel>Analytics</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="admin-settings" href="/admin/settings">
+                  <IonIcon icon={settings} />
+                  <IonLabel>Settings</IonLabel>
                 </IonTabButton>
               </IonTabBar>
             </IonTabs>
