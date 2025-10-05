@@ -1,6 +1,6 @@
 // AdminAnalytics.tsx
 import "./AdminAnalytics.css";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   IonPage,
   IonHeader,
@@ -10,13 +10,8 @@ import {
   IonLabel,
   IonItem,
   IonList,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardContent,
+  IonSpinner,
 } from "@ionic/react";
-
 import {
   BarChart,
   Bar,
@@ -27,17 +22,111 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// Sample data for chart
-const data = [
-  { name: "Jan", Electronics: 3, "School Supplies": 5 },
-  { name: "Feb", Electronics: 4, "School Supplies": 5 },
-  { name: "Mar", Electronics: 3, "School Supplies": 5 },
-  { name: "Apr", Electronics: 3, "School Supplies": 5 },
-  { name: "May", Electronics: 3, "School Supplies": 5 },
-  { name: "Jun", Electronics: 4, "School Supplies": 6 },
-];
+// interface Donation {
+//   _id: string;
+//   offchain?: {
+//     category?: string;
+//     donorInfo?: { email?: string; name?: string };
+//   };
+//   blockchain?: {
+//     status?: string;
+//     timestamp?: string;
+//   };
+// }
+interface Donation {
+  _id?: string;
+  itemID?: string;
+  status?: string;
+  category?: string;
+  offchain?: { category?: string };
+  blockchain?: { status?: string };
+}
 
 const AdminAnalytics: React.FC = () => {
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [statusSummary, setStatusSummary] = useState({
+    Pending: 0,
+    Accepted: 0,
+    "In Transit": 0,
+    Delivered: 0,
+  });
+  const [donorCount, setDonorCount] = useState(0);
+
+  // 🔹 Fetch donations and donors
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const [donationsRes, donorsRes] = await Promise.all([
+          fetch("http://localhost:3000/api/donations"),
+          fetch("http://localhost:3000/api/users/count-donors"),
+        ]);
+
+        const donationData = await donationsRes.json();
+        const donorData = await donorsRes.json();
+
+        setDonations(donationData);
+        setDonorCount(donorData.donorCount ?? 0);
+        computeAnalytics(donationData);
+      } catch (err) {
+        console.error("Error fetching analytics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  // 🔹 Compute status and category analytics
+  const computeAnalytics = (donations: Donation[]) => {
+    const statusCount = {
+      Pending: 0,
+      Accepted: 0,
+      "In Transit": 0,
+      Delivered: 0,
+    };
+    const categoryCount: Record<string, number> = {};
+
+    donations.forEach((don: any) => {
+      // ✅ Handle status (works for both flat and nested)
+      const status =
+        don.status ||
+        don.blockchain?.status ||
+        "Pending";
+      if (statusCount.hasOwnProperty(status)) {
+        statusCount[status as keyof typeof statusCount]++;
+      }
+
+      // ✅ Handle category (works for both flat and nested)
+      const category =
+        don.category ||
+        don.offchain?.category ||
+        "Uncategorized";
+      categoryCount[category] = (categoryCount[category] || 0) + 1;
+    });
+
+    setStatusSummary(statusCount);
+
+    // Map to readable labels
+    const categoryNameMap: Record<string, string> = {
+      electronics: "Electronics & Gadgets",
+      school: "School Supplies",
+      books: "Books & Learning Materials",
+      uniforms: "Uniforms & Clothing",
+      Uncategorized: "Uncategorized",
+    };
+
+    const chartReady = Object.entries(categoryCount).map(([key, count]) => ({
+      name: categoryNameMap[key] || key,
+      Donations: count,
+    }));
+
+    setChartData(chartReady);
+  };
+
+
   return (
     <IonPage>
       <IonHeader>
@@ -47,67 +136,53 @@ const AdminAnalytics: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-        {/* Total Donations Chart */}
-        <h1 className="section-title">Total Donations</h1>
-        <p className="section-subtitle">Total Donations Received by Type</p>
-        <div className="chart-container">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={data}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Electronics" fill="#7a9bbd" />
-              <Bar dataKey="School Supplies" fill="#003366" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {loading ? (
+          <div className="center-spinner">
+            <IonSpinner name="crescent" />
+          </div>
+        ) : (
+          <>
+            {/* 🔹 Category Bar Chart */}
+            <h1 className="section-title">Total Donations</h1>
+            <p className="section-subtitle">Total Donations Received by Type</p>
 
-        {/* Registered Donors Count */}
-        <h2 className="section-title">Registered Donors</h2>
-        <p className="donor-count">68</p>
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={chartData}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Donations" fill="#003366" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
 
-        {/* Donation Records */}
-        <IonCard className="donation-card">
-          <IonCardContent>
-            <IonGrid>
-              <IonRow>
-                <IonCol size="8">
-                  <IonLabel>
-                    <h2>Maria Mendoza</h2>
-                    <h2>2 Laptops</h2>
-                  </IonLabel>
-                </IonCol>
-                <IonCol size="4" className="text-right">
-                  <h2 className="donation-status">Delivered</h2>
-                  <h2 className="donation-number">5</h2>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonCardContent>
-        </IonCard>
+            {/* 🔹 Registered Donors */}
+            <h2 className="section-title">Registered Donors</h2>
+            <p className="donor-count">{donorCount}</p>
 
-        {/* Status Summary */}
-        <IonList className="status-summary">
-          <IonItem lines="full">
-            <IonLabel>Registered Donors</IonLabel>
-            <IonLabel slot="end" className="summary-value">
-              12
-            </IonLabel>
-          </IonItem>
-          <IonItem lines="full">
-            <IonLabel>Delivered</IonLabel>
-            <IonLabel slot="end" className="summary-value">
-              5
-            </IonLabel>
-          </IonItem>
-          <IonItem lines="none">
-            <IonLabel>Pending</IonLabel>
-            <IonLabel slot="end" className="summary-value">
-              3
-            </IonLabel>
-          </IonItem>
-        </IonList>
+            {/* 🔹 Donation Status Summary */}
+            <IonList className="status-summary">
+              <IonItem lines="full">
+                <IonLabel>Pending</IonLabel>
+                <IonLabel slot="end">{statusSummary.Pending}</IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonLabel>Accepted</IonLabel>
+                <IonLabel slot="end">{statusSummary.Accepted}</IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonLabel>In Transit</IonLabel>
+                <IonLabel slot="end">{statusSummary["In Transit"]}</IonLabel>
+              </IonItem>
+              <IonItem lines="none">
+                <IonLabel>Delivered</IonLabel>
+                <IonLabel slot="end">{statusSummary.Delivered}</IonLabel>
+              </IonItem>
+            </IonList>
+          </>
+        )}
       </IonContent>
     </IonPage>
   );

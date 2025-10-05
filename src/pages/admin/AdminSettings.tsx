@@ -13,8 +13,20 @@ import {
   IonButton,
   IonText,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 
 const AdminSettings: React.FC = () => {
+  const history = useHistory();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
+  const goToBeneficiaries = () => {
+    history.push("/admin/beneficiaries");
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -30,7 +42,7 @@ const AdminSettings: React.FC = () => {
             <h1 className="user-name">Corazon Gomez</h1>
             <IonText color="medium">corazon@brightaid.com</IonText>
           </div>
-          <IonButton size="small" className="logout-btn">
+          <IonButton size="small" className="logout-btn" onClick={handleLogout}>
             Log Out
           </IonButton>
         </div>
@@ -41,8 +53,8 @@ const AdminSettings: React.FC = () => {
           <IonItem detail lines="full">
             <IonLabel>Manage Donors</IonLabel>
           </IonItem>
-          <IonItem detail lines="full">
-            <IonLabel>Recipient Organization</IonLabel>
+          <IonItem detail lines="full" button onClick={goToBeneficiaries}>
+            <IonLabel>School Beneficiaries</IonLabel>
           </IonItem>
           <IonItem detail lines="full">
             <IonLabel>Analytics & Reports</IonLabel>

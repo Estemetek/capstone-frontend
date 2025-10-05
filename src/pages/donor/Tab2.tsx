@@ -70,7 +70,7 @@ const Tab2: React.FC = () => {
 
         {/* Filters */}
         <div className="filters">
-          {["All", "Pending", "Donated", "In Transit", "Delivered", "Received"].map((status) => (
+          {["All", "Pending", "Accepted", "In Transit", "Delivered"].map((status) => (
             <IonChip
               key={status}
               className={`filter-chip ${filter === status ? "active" : ""}`}

@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 🔹 Check for default admin account first
+    // 🔹 Check for default hardcoded admin (optional)
     if (email === "admin@example.com" && password === "admin") {
       localStorage.setItem("userRole", "admin");
       localStorage.setItem("userName", "Administrator");
@@ -32,7 +32,7 @@ const Login: React.FC = () => {
     }
 
     try {
-      // Otherwise, call your normal API for donors
+      // Call your API for normal accounts
       const res = await login(email, password);
 
       // Save token + user info
@@ -40,13 +40,17 @@ const Login: React.FC = () => {
       localStorage.setItem("userId", res.user.id);
       localStorage.setItem("userName", res.user.name);
       localStorage.setItem("userEmail", res.user.email ?? email);
-      localStorage.setItem("userContact", (res.user as any).contactNo ?? "");
+      localStorage.setItem("userContact", res.user.contactNo ?? "");
       localStorage.setItem("userRole", res.user.role);
 
-      console.log("✅ Donor logged in:", res);
+      console.log("✅ User logged in:", res);
 
-      // Redirect donor side
-      history.push("/tabs/tab1");
+      // 🔹 Redirect based on role
+      if (res.user.role === "admin") {
+        history.push("/admin/home");
+      } else {
+        history.push("/tabs/tab1");
+      }
     } catch (err: any) {
       console.error("❌ Login failed:", err);
       setError("Username or password incorrect");

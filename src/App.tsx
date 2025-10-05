@@ -11,7 +11,14 @@ import {
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route } from "react-router-dom";
 
-import { home, heart, searchCircle, person, helpCircle, settings } from "ionicons/icons";
+import {
+  home,
+  heart,
+  searchCircle,
+  person,
+  helpCircle,
+  settings,
+} from "ionicons/icons";
 
 // Shared pages
 import Login from "./pages/shared/login";
@@ -31,7 +38,13 @@ import AdminHome from "./pages/admin/AdminHome";
 import AdminDonations from "./pages/admin/AdminDonations";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminDonationDetail from "./pages/admin/AdminDonationDetail";
+import AdminBeneficiaries from "./pages/admin/AdminBeneficiaries";
 
+// Services
+import ProtectedRoute from "./services/ProtectedRoute";
+
+// Ionic CSS
 import "@ionic/react/css/core.css";
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
@@ -51,13 +64,14 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         {/* Shared routes */}
-        <Route path="/login" component={Login} exact />
-        <Route path="/signup" component={Signup} exact />
+        <Route exact path="/login" component={Login} />
+        <Route exact path="/signup" component={Signup} />
 
-        {/* Donor routes with tabs */}
-        <Route
+        {/* Donor routes (Protected) */}
+        <ProtectedRoute
           path="/tabs"
-          render={() => (
+          requiredRole="donor"
+          component={() => (
             <IonTabs>
               <IonRouterOutlet>
                 <Route exact path="/tabs/tab1" component={Tab1} />
@@ -66,7 +80,11 @@ const App: React.FC = () => (
                 <Route exact path="/tabs/tab4" component={Tab4} />
                 <Route exact path="/tabs/tab5" component={Tab5} />
                 <Route exact path="/tabs/add-donation" component={AddDonation} />
-                <Route exact path="/tabs/donation/:id" component={DonationDetail} />
+                <Route
+                  exact
+                  path="/tabs/donation/:id"
+                  component={DonationDetail}
+                />
                 <Redirect exact from="/tabs" to="/tabs/tab1" />
               </IonRouterOutlet>
 
@@ -96,16 +114,23 @@ const App: React.FC = () => (
           )}
         />
 
-        {/* Admin routes with tabs */}
-        <Route
+        {/* Admin routes (Protected) */}
+        <ProtectedRoute
           path="/admin"
-          render={() => (
+          requiredRole="admin"
+          component={() => (
             <IonTabs>
               <IonRouterOutlet>
                 <Route exact path="/admin/home" component={AdminHome} />
                 <Route exact path="/admin/donations" component={AdminDonations} />
+                <Route
+                  exact
+                  path="/admin/donations/:itemID"
+                  component={AdminDonationDetail}
+                />
                 <Route exact path="/admin/analytics" component={AdminAnalytics} />
                 <Route exact path="/admin/settings" component={AdminSettings} />
+                <Route exact path="/admin/beneficiaries" component={AdminBeneficiaries} />
                 <Redirect exact from="/admin" to="/admin/home" />
               </IonRouterOutlet>
 
