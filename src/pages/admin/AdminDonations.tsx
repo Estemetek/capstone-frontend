@@ -28,7 +28,7 @@ const AdminDonations: React.FC = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const res = await fetch("http://192.168.254.106:3000/api/donations");
+        const res = await fetch("http://localhost:3000/api/donations");
         const data = await res.json();
 
         // Filter out empty donations

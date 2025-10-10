@@ -27,6 +27,10 @@ const AdminSettings: React.FC = () => {
     history.push("/admin/beneficiaries");
   };
 
+  const goToManageDonors = () => {
+    history.push("/admin/donors");
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -50,7 +54,7 @@ const AdminSettings: React.FC = () => {
         {/* Admin Section */}
         <IonList className="settings-list">
           <div className="list-header">ADMIN</div>
-          <IonItem detail lines="full">
+          <IonItem detail lines="full" button onClick={goToManageDonors}>
             <IonLabel>Manage Donors</IonLabel>
           </IonItem>
           <IonItem detail lines="full" button onClick={goToBeneficiaries}>

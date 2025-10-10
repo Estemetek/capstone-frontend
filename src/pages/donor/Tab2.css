@@ -104,6 +104,12 @@
   text-align: center;
   min-width: 80px;
 }
+.status-badge {
+  /* default visible style */
+  background: #E3E3E9; /* light gray background */
+  color: #000000; /* ensure dark text for readability */
+}
+
 .status-badge.in-transit {
   background: #E3E3E9;
   color: #000;
@@ -114,6 +120,16 @@
 }
 .status-badge.received {
   background: #E3E3E9;
+  color: #000000;
+}
+
+/* Explicit rules for other statuses used in the UI */
+.status-badge.pending {
+  background: #FFD66B; /* light amber */
+  color: #000000;
+}
+.status-badge.accepted {
+  background: #A8E6A3; /* light green */
   color: #000000;
 }
 

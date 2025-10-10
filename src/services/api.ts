@@ -61,9 +61,30 @@ export interface AuthResponse {
 }
 
 // -----------------------------
+// Beneficiary Interfaces
+// -----------------------------
+export interface Beneficiary {
+  _id?: string;
+  schoolName: string;
+  schoolId: string;
+  schoolType: string;
+  classification: string;
+  accreditation: {
+    agency: string;
+    status: string;
+  };
+  contactPerson?: string;
+  contactEmail?: string;
+  contactNumber?: string;
+  address?: string;
+  region?: string;
+}
+
+// -----------------------------
 // Base API URL
 // -----------------------------
-const API_BASE_URL =
+//const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // -----------------------------
@@ -85,6 +106,22 @@ async function authFetch(url: string, options: RequestInit = {}) {
     throw new Error(`${response.status} ${response.statusText} - ${errorText}`);
   }
   return response.json();
+}
+
+// -----------------------------
+// Beneficiary APIs
+// -----------------------------
+export async function getBeneficiaries(): Promise<Beneficiary[]> {
+  return authFetch(`${API_BASE_URL}/beneficiaries`);
+}
+
+export async function addBeneficiary(
+  beneficiaryData: Beneficiary
+): Promise<Beneficiary> {
+  return authFetch(`${API_BASE_URL}/beneficiaries`, {
+    method: "POST",
+    body: JSON.stringify(beneficiaryData),
+  });
 }
 
 // -----------------------------

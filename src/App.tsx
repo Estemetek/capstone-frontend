@@ -40,6 +40,8 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminDonationDetail from "./pages/admin/AdminDonationDetail";
 import AdminBeneficiaries from "./pages/admin/AdminBeneficiaries";
+import AdminDonors from "./pages/admin/AdminDonors";
+import AdminRegisterDonor from "./pages/admin/AdminAddDonor";
 
 // Services
 import ProtectedRoute from "./services/ProtectedRoute";
@@ -59,6 +61,45 @@ import "./theme/variables.css";
 
 setupIonicReact();
 
+// A separate component for admin tabs
+const AdminTabs: React.FC = () => (
+  <IonTabs>
+    <IonRouterOutlet>
+      <Route exact path="/admin/home" component={AdminHome} />
+      <Route exact path="/admin/donations" component={AdminDonations} />
+      <Route exact path="/admin/donations/:itemID" component={AdminDonationDetail} />
+      <Route exact path="/admin/analytics" component={AdminAnalytics} />
+      <Route exact path="/admin/settings" component={AdminSettings} />
+      <Route exact path="/admin/donors" component={AdminDonors} />
+      <Route exact path="/admin/register-donor" component={AdminRegisterDonor} />
+
+      {/* Add this route for AdminBeneficiaries inside tabs outlet */}
+      <Route exact path="/admin/beneficiaries" component={AdminBeneficiaries} />
+
+      <Redirect exact from="/admin" to="/admin/home" />
+    </IonRouterOutlet>
+
+    <IonTabBar slot="bottom">
+      <IonTabButton tab="admin-home" href="/admin/home">
+        <IonIcon icon={home} />
+        <IonLabel>Home</IonLabel>
+      </IonTabButton>
+      <IonTabButton tab="admin-donations" href="/admin/donations">
+        <IonIcon icon={heart} />
+        <IonLabel>Donations</IonLabel>
+      </IonTabButton>
+      <IonTabButton tab="admin-analytics" href="/admin/analytics">
+        <IonIcon icon={searchCircle} />
+        <IonLabel>Analytics</IonLabel>
+      </IonTabButton>
+      <IonTabButton tab="admin-settings" href="/admin/settings">
+        <IonIcon icon={settings} />
+        <IonLabel>Settings</IonLabel>
+      </IonTabButton>
+    </IonTabBar>
+  </IonTabs>
+);
+
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
@@ -67,7 +108,7 @@ const App: React.FC = () => (
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
 
-        {/* Donor routes (Protected) */}
+        {/* Donor routes */}
         <ProtectedRoute
           path="/tabs"
           requiredRole="donor"
@@ -80,11 +121,7 @@ const App: React.FC = () => (
                 <Route exact path="/tabs/tab4" component={Tab4} />
                 <Route exact path="/tabs/tab5" component={Tab5} />
                 <Route exact path="/tabs/add-donation" component={AddDonation} />
-                <Route
-                  exact
-                  path="/tabs/donation/:id"
-                  component={DonationDetail}
-                />
+                <Route exact path="/tabs/donation/:id" component={DonationDetail} />
                 <Redirect exact from="/tabs" to="/tabs/tab1" />
               </IonRouterOutlet>
 
@@ -114,46 +151,15 @@ const App: React.FC = () => (
           )}
         />
 
-        {/* Admin routes (Protected) */}
-        <ProtectedRoute
-          path="/admin"
-          requiredRole="admin"
-          component={() => (
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/admin/home" component={AdminHome} />
-                <Route exact path="/admin/donations" component={AdminDonations} />
-                <Route
-                  exact
-                  path="/admin/donations/:itemID"
-                  component={AdminDonationDetail}
-                />
-                <Route exact path="/admin/analytics" component={AdminAnalytics} />
-                <Route exact path="/admin/settings" component={AdminSettings} />
-                <Route exact path="/admin/beneficiaries" component={AdminBeneficiaries} />
-                <Redirect exact from="/admin" to="/admin/home" />
-              </IonRouterOutlet>
+        {/* Admin routes */}
+        <ProtectedRoute path="/admin" requiredRole="admin" component={AdminTabs} />
 
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="admin-home" href="/admin/home">
-                  <IonIcon icon={home} />
-                  <IonLabel>Home</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="admin-donations" href="/admin/donations">
-                  <IonIcon icon={heart} />
-                  <IonLabel>Donations</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="admin-analytics" href="/admin/analytics">
-                  <IonIcon icon={searchCircle} />
-                  <IonLabel>Analytics</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="admin-settings" href="/admin/settings">
-                  <IonIcon icon={settings} />
-                  <IonLabel>Settings</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          )}
+        {/* Standalone Admin Beneficiaries route */}
+        <ProtectedRoute
+          exact
+          path="/admin/beneficiaries"
+          requiredRole="admin"
+          component={AdminBeneficiaries}
         />
 
         {/* Default route */}

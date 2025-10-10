@@ -16,9 +16,12 @@ import {
   IonButtons,
   IonIcon,
   IonToast,
+  IonInput,
 } from "@ionic/react";
 import { useParams, useHistory } from "react-router-dom";
 import { checkmarkCircle } from "ionicons/icons";
+
+import { getBeneficiaries, Beneficiary } from "../../services/api";
 
 interface RouteParams {
   itemID: string;
@@ -48,6 +51,7 @@ interface DonationDetailData {
     quantity?: number;
     notes?: string;
     createdAt?: string;
+    updatedAt?: string;
     qrCodeUrl?: string;
     images?: string[];
     appraisalValue?: number;
@@ -60,6 +64,8 @@ const AdminDonationDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [selectedRecipient, setSelectedRecipient] = useState<string>("");
+  const [currentOwner, setCurrentOwner] = useState<string>("");
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [toastMsg, setToastMsg] = useState<string>("");
   const history = useHistory();
 
@@ -70,11 +76,12 @@ const AdminDonationDetail: React.FC = () => {
     const fetchDonation = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://192.168.254.106:3000/api/donations/${itemID}`);
+        const res = await fetch(`http://localhost:3000/api/donations/${itemID}`);
         const data = await res.json();
         setDonation(data);
         setSelectedStatus(data.blockchain?.status || "Pending");
         setSelectedRecipient(data.offchain?.recipientInfo?.school || "");
+        setCurrentOwner(data.blockchain?.currentOwner || "Donor");
       } catch (err) {
         console.error("❌ Error fetching donation detail:", err);
       } finally {
@@ -84,17 +91,45 @@ const AdminDonationDetail: React.FC = () => {
     fetchDonation();
   }, [itemID]);
 
+  // 🧠 Fetch beneficiaries
+  useEffect(() => {
+    const fetchBeneficiaries = async () => {
+      try {
+        const data = await getBeneficiaries();
+        setBeneficiaries(data);
+      } catch (err) {
+        console.error("❌ Error fetching beneficiaries:", err);
+      }
+    };
+    fetchBeneficiaries();
+  }, []);
+
+  // 🧩 Auto-adjust currentOwner when status changes
+useEffect(() => {
+  if (!donation) return;
+
+  if (selectedStatus === "Pending") {
+    setCurrentOwner(donation.offchain?.donorInfo?.name || "Donor");
+  } else if (selectedStatus === "Accepted") {
+    setCurrentOwner("Organization Warehouse");
+  } else if (selectedStatus === "In Transit") {
+    setCurrentOwner("Logistics / Courier");
+  } else if (selectedStatus === "Delivered") {
+    setCurrentOwner(selectedRecipient || "Recipient");
+  }
+}, [selectedStatus, selectedRecipient, donation]);
+
   // ✅ Status color helper
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return "#f4c542"; // Yellow
+        return "#f4c542";
       case "Accepted":
-        return "#2dd36f"; // Green
+        return "#2dd36f";
       case "In Transit":
-        return "#3880ff"; // Blue
+        return "#3880ff";
       case "Delivered":
-        return "#9b59b6"; // Purple
+        return "#9b59b6";
       default:
         return "#ccc";
     }
@@ -102,22 +137,48 @@ const AdminDonationDetail: React.FC = () => {
 
   const currentStatusIndex = statusOrder.indexOf(selectedStatus);
 
-  // ✅ Update status on blockchain
+  // ✅ Update status and currentOwner on blockchain
   const handleStatusUpdate = async () => {
     try {
-      const res = await fetch(`http://192.168.254.106:3000/api/donations/${itemID}/status`, {
+      // Compute currentOwner automatically before sending
+      let updatedOwner = currentOwner;
+
+      if (selectedStatus === "Pending") {
+        updatedOwner = donation?.offchain?.donorInfo?.name || "Donor";
+      } else if (selectedStatus === "Accepted") {
+        updatedOwner = "Organization Warehouse";
+      } else if (selectedStatus === "In Transit") {
+        updatedOwner = "Logistics / Courier";
+      } else if (selectedStatus === "Delivered") {
+        updatedOwner = selectedRecipient || "Recipient";
+      }
+
+      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: selectedStatus }),
+        body: JSON.stringify({
+          status: selectedStatus,
+          currentOwner: updatedOwner,
+        }),
       });
+
       const data = await res.json();
+
       if (res.ok) {
         setToastMsg(`Status updated to "${selectedStatus}"`);
         setDonation((prev) =>
           prev
-            ? { ...prev, blockchain: { ...prev.blockchain, status: selectedStatus } }
+            ? {
+                ...prev,
+                blockchain: {
+                  ...prev.blockchain,
+                  status: selectedStatus,
+                  currentOwner: updatedOwner,
+                },
+              }
             : prev
         );
+        setCurrentOwner(updatedOwner);
       } else {
         setToastMsg(data.error || "Failed to update status");
       }
@@ -127,10 +188,42 @@ const AdminDonationDetail: React.FC = () => {
     }
   };
 
+  // ✅ Save manually edited currentOwner
+  const handleOwnerUpdate = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/owner`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentOwner }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setToastMsg(`Current owner updated to "${currentOwner}"`);
+        setDonation((prev) =>
+          prev
+            ? {
+                ...prev,
+                blockchain: {
+                  ...prev.blockchain,
+                  currentOwner,
+                },
+              }
+            : prev
+        );
+      } else {
+        setToastMsg(data.error || "Failed to update current owner");
+      }
+    } catch (err) {
+      console.error("❌ Error updating current owner:", err);
+      setToastMsg("Error updating current owner");
+    }
+  };
+
   // ✅ Update recipient (MongoDB only)
   const handleRecipientUpdate = async () => {
     try {
-      const res = await fetch(`http://192.168.254.106:3000/api/donations/${itemID}/recipient`, {
+      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/recipient`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ school: selectedRecipient }),
@@ -203,13 +296,22 @@ const AdminDonationDetail: React.FC = () => {
       <IonContent className="ion-padding">
         <IonCard>
           <IonCardContent>
-            {/* 🧩 Core Info */}
-            <h2>{blockchain.itemType}</h2>
+            <h1 style={{ fontWeight: "bold", color: "#000" }}>{blockchain.itemType}</h1>
             <p><strong>Asset ID:</strong> {blockchain.itemID}</p>
             <p><strong>Category:</strong> {offchain.category || "Uncategorized"}</p>
             <p><strong>Status:</strong> {blockchain.status}</p>
             <p><strong>Condition:</strong> {blockchain.condition}</p>
-            <p><strong>Owner:</strong> {blockchain.currentOwner}</p>
+
+            {/* 🧩 Editable Current Owner */}
+            <IonInput
+              label="Current Owner"
+              value={currentOwner}
+              onIonChange={(e) => setCurrentOwner(e.detail.value!)}
+              fill="outline"
+            />
+            <IonButton expand="block" color="warning" onClick={handleOwnerUpdate}>
+              Save Current Owner
+            </IonButton>
 
             <p><strong>Donor Name:</strong> {offchain.donorInfo?.name || "N/A"}</p>
             <p><strong>Donor Email:</strong> {offchain.donorInfo?.email || "N/A"}</p>
@@ -229,6 +331,13 @@ const AdminDonationDetail: React.FC = () => {
               <strong>Date Donated:</strong>{" "}
               {new Date(offchain.createdAt || blockchain.timestamp).toLocaleString()}
             </p>
+            
+            {offchain.updatedAt && (
+              <p>
+                <strong>Last Updated:</strong>{" "}
+                {new Date(offchain.updatedAt).toLocaleString()}
+              </p>
+            )}
 
             {/* ✅ QR Code */}
             {offchain.qrCodeUrl && (
@@ -266,10 +375,7 @@ const AdminDonationDetail: React.FC = () => {
             )}
 
             {/* 🟢 Dynamic Status Steps */}
-            <div
-              className="status-steps"
-              style={{ margin: "20px 0", display: "flex", alignItems: "center" }}
-            >
+            <div style={{ margin: "20px 0", display: "flex", alignItems: "center" }}>
               {statusOrder.map((step, index) => {
                 const isActive = currentStatusIndex >= index;
                 const circleColor = isActive ? getStatusColor(step) : "#ccc";
@@ -318,9 +424,11 @@ const AdminDonationDetail: React.FC = () => {
               placeholder="Select organization"
               onIonChange={(e) => setSelectedRecipient(e.detail.value)}
             >
-              <IonSelectOption value="Bangoy Elementary School">Bangoy Elementary School</IonSelectOption>
-              <IonSelectOption value="Matina High School">Matina High School</IonSelectOption>
-              <IonSelectOption value="UIC College">UIC College</IonSelectOption>
+              {beneficiaries.map((b) => (
+                <IonSelectOption key={b._id} value={b.schoolName}>
+                  {b.schoolName}
+                </IonSelectOption>
+              ))}
             </IonSelect>
             <IonButton expand="block" color="secondary" onClick={handleRecipientUpdate}>
               Save Recipient
@@ -345,12 +453,8 @@ const AdminDonationDetail: React.FC = () => {
               Update Status
             </IonButton>
 
-            <IonButton
-                expand="block"
-                color="medium"
-                onClick={() => history.goBack()}
-                >
-                Back
+            <IonButton expand="block" color="medium" onClick={() => history.goBack()}>
+              Back
             </IonButton>
           </IonCardContent>
         </IonCard>

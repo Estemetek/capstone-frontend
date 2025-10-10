@@ -83,8 +83,8 @@ const AddDonation: React.FC = () => {
         notes: description,
         images: uploadedUrls, // saved Supabase URLs
         donorID: donorInfo.id || donorInfo.email,
-        currentOwner: "Organization Warehouse",
-        status: "Pending",
+        currentOwner: donorInfo.name, // current owner is donor at creation
+        status: "Pending", //default initial status
         donorInfo,
         recipientInfo: {
           school: recipientSchool,
