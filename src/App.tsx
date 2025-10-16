@@ -42,6 +42,8 @@ import AdminDonationDetail from "./pages/admin/AdminDonationDetail";
 import AdminBeneficiaries from "./pages/admin/AdminBeneficiaries";
 import AdminDonors from "./pages/admin/AdminDonors";
 import AdminRegisterDonor from "./pages/admin/AdminAddDonor";
+import AdminStatusLog from "./pages/admin/AdminStatusLog";
+import DonorDetails from "./pages/admin/DonorDetails"; 
 
 // Services
 import ProtectedRoute from "./services/ProtectedRoute";
@@ -68,9 +70,11 @@ const AdminTabs: React.FC = () => (
       <Route exact path="/admin/home" component={AdminHome} />
       <Route exact path="/admin/donations" component={AdminDonations} />
       <Route exact path="/admin/donations/:itemID" component={AdminDonationDetail} />
+      <Route exact path="/admin/donations/:itemID/status-log" component={AdminStatusLog} />
       <Route exact path="/admin/analytics" component={AdminAnalytics} />
       <Route exact path="/admin/settings" component={AdminSettings} />
       <Route exact path="/admin/donors" component={AdminDonors} />
+      <Route exact path="/admin/donors/:id" component={DonorDetails} />
       <Route exact path="/admin/register-donor" component={AdminRegisterDonor} />
 
       {/* Add this route for AdminBeneficiaries inside tabs outlet */}

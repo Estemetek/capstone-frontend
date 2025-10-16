@@ -304,6 +304,14 @@ const Tab3: React.FC = () => {
           </div>
         )}
 
+        {categoryResults.length === 0 && selected === "webquery" && (
+          <div className="section">
+            <p style={{ textAlign: "center", color: "#888" }}>
+              No donations found for this category.
+            </p>
+          </div>
+        )}
+
         <IonToast
           isOpen={!!error}
           onDidDismiss={() => setError(null)}

@@ -15,9 +15,12 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 import { getBeneficiaries, addBeneficiary, Beneficiary } from "../../services/api";
 
 const AdminBeneficiaries: React.FC = () => {
+  const history = useHistory();
+
   const [schools, setSchools] = useState<Beneficiary[]>([]);
   const [showForm, setShowForm] = useState(false);
 

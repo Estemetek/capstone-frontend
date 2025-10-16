@@ -58,13 +58,33 @@ const AdminAnalytics: React.FC = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
+        const token = localStorage.getItem("token"); // or sessionStorage
+        if (!token) {
+          throw new Error("No token found. Please log in first.");
+        }
+
         const [donationsRes, donorsRes] = await Promise.all([
-          fetch("http://localhost:3000/api/donations"),
-          fetch("http://localhost:3000/api/users/count-donors"),
+          fetch("http://localhost:3000/api/donations", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("http://localhost:3000/api/users/count-donors", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
+
+        // Check if unauthorized
+        if (donationsRes.status === 401 || donorsRes.status === 401) {
+          throw new Error("Unauthorized. Please log in again.");
+        }
 
         const donationData = await donationsRes.json();
         const donorData = await donorsRes.json();
+
+        // 👇 Check if donationData is array
+        if (!Array.isArray(donationData)) {
+          console.error("Invalid donation data format:", donationData);
+          return;
+        }
 
         setDonations(donationData);
         setDonorCount(donorData.donorCount ?? 0);

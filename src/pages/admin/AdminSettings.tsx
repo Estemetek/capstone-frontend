@@ -18,6 +18,9 @@ import { useHistory } from "react-router-dom";
 const AdminSettings: React.FC = () => {
   const history = useHistory();
 
+  const adminName = localStorage.getItem("userName");
+  const adminEmail = localStorage.getItem("userEmail");
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/login";
@@ -43,8 +46,8 @@ const AdminSettings: React.FC = () => {
         {/* User Info */}
         <div className="user-info">
           <div>
-            <h1 className="user-name">Corazon Gomez</h1>
-            <IonText color="medium">corazon@brightaid.com</IonText>
+            <h1 className="user-name">{adminName}</h1>
+            <IonText color="medium">{adminEmail}</IonText>
           </div>
           <IonButton size="small" className="logout-btn" onClick={handleLogout}>
             Log Out

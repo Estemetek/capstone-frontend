@@ -1,5 +1,4 @@
-// src/pages/admin/AdminDonationDetail.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react"; // Added useMemo
 import {
   IonPage,
   IonHeader,
@@ -10,18 +9,15 @@ import {
   IonCardContent,
   IonSpinner,
   IonButton,
-  IonSelect,
-  IonSelectOption,
-  IonBackButton,
   IonButtons,
+  IonBackButton,
   IonIcon,
   IonToast,
-  IonInput,
 } from "@ionic/react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { checkmarkCircle } from "ionicons/icons";
-
 import { getBeneficiaries, Beneficiary } from "../../services/api";
+import StatusDocumentationForm from "../../components/StatusDocumentationForm";
 
 interface RouteParams {
   itemID: string;
@@ -34,18 +30,17 @@ interface DonationDetailData {
     condition: string;
     donorID: string;
     currentOwner: string;
-    status: string;
+    status: string; // The status used for the timeline
     timestamp: string;
   };
   offchain: {
-    donorInfo: {
-      name: string;
-      email: string;
-      contactNo: string;
-    };
-    recipientInfo?: {
-      school?: string;
-      contact?: string;
+    donorInfo: { name: string; email: string; contactNo: string };
+    recipientInfo?: { 
+      school?: string; 
+      contactPerson?: string; 
+      contactEmail?: string;
+      contactNumber?: string;
+      contactDetail?: string; 
     };
     category?: string;
     quantity?: number;
@@ -55,6 +50,10 @@ interface DonationDetailData {
     qrCodeUrl?: string;
     images?: string[];
     appraisalValue?: number;
+    // CRITICAL: Updated interface to align with backend's response name (statusLogs or statusHistory)
+    statusHistory?: any[]; 
+    statusLogs?: any[]; // The MongoDB array of immutable logs
+    documentationEntries?: any[]; // The separate StatusDocumentation entries
   };
 }
 
@@ -67,21 +66,58 @@ const AdminDonationDetail: React.FC = () => {
   const [currentOwner, setCurrentOwner] = useState<string>("");
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [toastMsg, setToastMsg] = useState<string>("");
-  const history = useHistory();
+  const [showDocModal, setShowDocModal] = useState(false);
+  const [nextStatus, setNextStatus] = useState<string>("");
+  
+  // Note: showRecipientDropdown is no longer needed as the form handles its own conditional logic.
+  // const [showRecipientDropdown, setShowRecipientDropdown] = useState(false);
 
+  const adminRole = localStorage.getItem("userRole") || "guest";
   const statusOrder = ["Pending", "Accepted", "In Transit", "Delivered"];
+  
+  // ✅ FIX: Use useMemo to reliably derive the index and the next status
+  const currentStatusIndex = useMemo(() => statusOrder.indexOf(selectedStatus), [selectedStatus]);
+  const nextStatusForDisplay = useMemo(() => {
+    return statusOrder[currentStatusIndex + 1] || "Delivered";
+  }, [currentStatusIndex, statusOrder]);
 
-  // 🧠 Fetch donation data
+
+  // 1. Fetch donation details
   useEffect(() => {
     const fetchDonation = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:3000/api/donations/${itemID}`);
-        const data = await res.json();
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("❌ No token found. Admin not logged in.");
+          setToastMsg("Session expired. Please log in again.");
+          return;
+        }
+
+        const res = await fetch(`http://localhost:3000/api/donations/${itemID}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (res.status === 401) {
+          console.error("❌ Unauthorized — Invalid or missing token");
+          setToastMsg("Unauthorized. Please log in again.");
+          return;
+        }
+
+        const data: DonationDetailData = await res.json();
         setDonation(data);
-        setSelectedStatus(data.blockchain?.status || "Pending");
+
+        const chainStatus = data.blockchain?.status || "Pending";
+        setSelectedStatus(chainStatus);
+
+        const chainOwner = data.blockchain?.currentOwner || data.offchain?.donorInfo?.name || "Donor";
+        setCurrentOwner(chainOwner);
+
         setSelectedRecipient(data.offchain?.recipientInfo?.school || "");
-        setCurrentOwner(data.blockchain?.currentOwner || "Donor");
       } catch (err) {
         console.error("❌ Error fetching donation detail:", err);
       } finally {
@@ -91,7 +127,7 @@ const AdminDonationDetail: React.FC = () => {
     fetchDonation();
   }, [itemID]);
 
-  // 🧠 Fetch beneficiaries
+  // 2. Fetch beneficiaries (unchanged)
   useEffect(() => {
     const fetchBeneficiaries = async () => {
       try {
@@ -104,22 +140,7 @@ const AdminDonationDetail: React.FC = () => {
     fetchBeneficiaries();
   }, []);
 
-  // 🧩 Auto-adjust currentOwner when status changes
-useEffect(() => {
-  if (!donation) return;
-
-  if (selectedStatus === "Pending") {
-    setCurrentOwner(donation.offchain?.donorInfo?.name || "Donor");
-  } else if (selectedStatus === "Accepted") {
-    setCurrentOwner("Organization Warehouse");
-  } else if (selectedStatus === "In Transit") {
-    setCurrentOwner("Logistics / Courier");
-  } else if (selectedStatus === "Delivered") {
-    setCurrentOwner(selectedRecipient || "Recipient");
-  }
-}, [selectedStatus, selectedRecipient, donation]);
-
-  // ✅ Status color helper
+  // 3. Status color helper (unchanged)
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
@@ -135,123 +156,27 @@ useEffect(() => {
     }
   };
 
-  const currentStatusIndex = statusOrder.indexOf(selectedStatus);
-
-  // ✅ Update status and currentOwner on blockchain
-  const handleStatusUpdate = async () => {
-    try {
-      // Compute currentOwner automatically before sending
-      let updatedOwner = currentOwner;
-
-      if (selectedStatus === "Pending") {
-        updatedOwner = donation?.offchain?.donorInfo?.name || "Donor";
-      } else if (selectedStatus === "Accepted") {
-        updatedOwner = "Organization Warehouse";
-      } else if (selectedStatus === "In Transit") {
-        updatedOwner = "Logistics / Courier";
-      } else if (selectedStatus === "Delivered") {
-        updatedOwner = selectedRecipient || "Recipient";
-      }
-
-      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status: selectedStatus,
-          currentOwner: updatedOwner,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setToastMsg(`Status updated to "${selectedStatus}"`);
-        setDonation((prev) =>
-          prev
-            ? {
-                ...prev,
-                blockchain: {
-                  ...prev.blockchain,
-                  status: selectedStatus,
-                  currentOwner: updatedOwner,
-                },
-              }
-            : prev
-        );
-        setCurrentOwner(updatedOwner);
-      } else {
-        setToastMsg(data.error || "Failed to update status");
-      }
-    } catch (err) {
-      console.error("❌ Error updating status:", err);
-      setToastMsg("Error updating status");
+  // 4. Handle next status button click
+  const handleNextStatus = () => {
+    if (adminRole !== "admin") {
+      setToastMsg("Only admins can update donation statuses.");
+      return;
     }
+
+    // Use the derived next status value
+    const next = nextStatusForDisplay;
+    
+    if (next === "Delivered" && selectedStatus === "Delivered") {
+        setToastMsg("Donation is already in final status (Delivered).");
+        return;
+    }
+
+    setNextStatus(next);
+    setShowDocModal(true);
   };
 
-  // ✅ Save manually edited currentOwner
-  const handleOwnerUpdate = async () => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/owner`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentOwner }),
-      });
-      const data = await res.json();
+  // ... (loading and not found UI remains the same)
 
-      if (res.ok) {
-        setToastMsg(`Current owner updated to "${currentOwner}"`);
-        setDonation((prev) =>
-          prev
-            ? {
-                ...prev,
-                blockchain: {
-                  ...prev.blockchain,
-                  currentOwner,
-                },
-              }
-            : prev
-        );
-      } else {
-        setToastMsg(data.error || "Failed to update current owner");
-      }
-    } catch (err) {
-      console.error("❌ Error updating current owner:", err);
-      setToastMsg("Error updating current owner");
-    }
-  };
-
-  // ✅ Update recipient (MongoDB only)
-  const handleRecipientUpdate = async () => {
-    try {
-      const res = await fetch(`http://localhost:3000/api/donations/${itemID}/recipient`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school: selectedRecipient }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setToastMsg(`Recipient set to ${selectedRecipient}`);
-        setDonation((prev) =>
-          prev
-            ? {
-                ...prev,
-                offchain: {
-                  ...prev.offchain,
-                  recipientInfo: { school: selectedRecipient },
-                },
-              }
-            : prev
-        );
-      } else {
-        setToastMsg(data.error || "Failed to assign recipient");
-      }
-    } catch (err) {
-      console.error("❌ Error assigning recipient:", err);
-      setToastMsg("Error assigning recipient");
-    }
-  };
-
-  // 🌀 Loading / Empty State
   if (loading)
     return (
       <IonPage>
@@ -279,11 +204,15 @@ useEffect(() => {
         </IonContent>
       </IonPage>
     );
-
+    
+  // Use statusLogs for history if available, otherwise fall back to statusHistory
+  const statusLogs = donation.offchain.statusLogs || donation.offchain.statusHistory || [];
+    
   const { blockchain, offchain } = donation;
 
   return (
     <IonPage>
+      {/* ... IonHeader ... */}
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -296,85 +225,77 @@ useEffect(() => {
       <IonContent className="ion-padding">
         <IonCard>
           <IonCardContent>
+            {/* Display uses state variables for immediate feedback */}
             <h1 style={{ fontWeight: "bold", color: "#000" }}>{blockchain.itemType}</h1>
             <p><strong>Asset ID:</strong> {blockchain.itemID}</p>
             <p><strong>Category:</strong> {offchain.category || "Uncategorized"}</p>
-            <p><strong>Status:</strong> {blockchain.status}</p>
-            <p><strong>Condition:</strong> {blockchain.condition}</p>
-
-            {/* 🧩 Editable Current Owner */}
-            <IonInput
-              label="Current Owner"
-              value={currentOwner}
-              onIonChange={(e) => setCurrentOwner(e.detail.value!)}
-              fill="outline"
-            />
-            <IonButton expand="block" color="warning" onClick={handleOwnerUpdate}>
-              Save Current Owner
-            </IonButton>
-
-            <p><strong>Donor Name:</strong> {offchain.donorInfo?.name || "N/A"}</p>
-            <p><strong>Donor Email:</strong> {offchain.donorInfo?.email || "N/A"}</p>
-            <p><strong>Donor Contact:</strong> {offchain.donorInfo?.contactNo || "N/A"}</p>
-
+            <p><strong>Status:</strong> {selectedStatus}</p> 
+            <p><strong>Current Owner:</strong> {currentOwner}</p> 
+            
+            {/* ... Other Info (unchanged) ... */}
+            <p><strong>Donor Name:</strong> {offchain.donorInfo?.name}</p>
+            <p><strong>Donor Email:</strong> {offchain.donorInfo?.email}</p>
+            <p><strong>Donor Contact:</strong> {offchain.donorInfo?.contactNo}</p>
+            
+            {/* --- RECIPIENT INFORMATION DISPLAY --- */}
             {offchain.recipientInfo?.school && (
               <p><strong>Recipient School:</strong> {offchain.recipientInfo.school}</p>
             )}
-
-            {offchain.notes && <p><strong>Notes:</strong> {offchain.notes}</p>}
-            {offchain.quantity && <p><strong>Quantity:</strong> {offchain.quantity}</p>}
-            {offchain.appraisalValue !== undefined && (
-              <p><strong>Appraisal Value:</strong> ₱{offchain.appraisalValue.toLocaleString()}</p>
+            {offchain.recipientInfo?.contactPerson && (
+              <p><strong>Contact Person:</strong> {offchain.recipientInfo.contactPerson}</p>
             )}
-
-            <p>
-              <strong>Date Donated:</strong>{" "}
-              {new Date(offchain.createdAt || blockchain.timestamp).toLocaleString()}
-            </p>
+            {offchain.recipientInfo?.contactEmail && (
+              <p><strong>Contact Email:</strong> {offchain.recipientInfo.contactEmail}</p>
+            )}
+            {offchain.recipientInfo?.contactNumber && (
+              <p><strong>Contact Number:</strong> {offchain.recipientInfo.contactNumber}</p>
+            )}
+            {offchain.recipientInfo?.contactDetail && 
+              !offchain.recipientInfo.contactEmail && 
+              !offchain.recipientInfo.contactNumber && (
+              <p><strong>Contact Detail:</strong> {offchain.recipientInfo.contactDetail}</p>
+            )}
+            {/* ------------------------------------------- */}
             
-            {offchain.updatedAt && (
-              <p>
-                <strong>Last Updated:</strong>{" "}
-                {new Date(offchain.updatedAt).toLocaleString()}
-              </p>
-            )}
+            {offchain.notes && <p><strong>Notes:</strong> {offchain.notes}</p>}
+            {offchain.quantity && <p><strong>Quantity:</strong> {offchain.quantity}</p>}
+            <p>
+              <strong>Date Donated:</strong>{" "}
+              {new Date(offchain.createdAt || blockchain.timestamp).toLocaleString()}
+            </p>
+            {offchain.updatedAt && (
+              <p>
+                <strong>Last Updated:</strong>{" "}
+                {new Date(offchain.updatedAt).toLocaleString()}
+              </p>
+            )}
+            
+            {/* QR Code and Images display sections are unchanged */}
+            {offchain.qrCodeUrl && (
+              <div style={{ marginTop: "15px", textAlign: "center" }}>
+                <h3>Donation QR Code</h3>
+                <img src={offchain.qrCodeUrl} alt="Donation QR Code" style={{ width: "200px" }} />
+                <p style={{ fontSize: "0.9em" }}>Scan this code to verify donation</p>
+              </div>
+            )}
 
-            {/* ✅ QR Code */}
-            {offchain.qrCodeUrl && (
-              <div style={{ marginTop: "15px", textAlign: "center" }}>
-                <h3>Donation QR Code</h3>
-                <img
-                  src={offchain.qrCodeUrl}
-                  alt="Donation QR Code"
-                  style={{ width: "200px" }}
-                />
-                <p style={{ fontSize: "0.9em" }}>Scan this code to verify donation</p>
-              </div>
-            )}
+            {offchain.images && offchain.images.length > 0 && (
+              <div style={{ marginTop: "15px" }}>
+                <h3>Uploaded Photos</h3>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {offchain.images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      alt={`Donation image ${idx + 1}`}
+                      style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "8px" }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-            {/* ✅ Uploaded Images */}
-            {offchain.images && offchain.images.length > 0 && (
-              <div style={{ marginTop: "15px" }}>
-                <h3>Uploaded Photos</h3>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {offchain.images.map((img, idx) => (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={`Donation image ${idx + 1}`}
-                      style={{
-                        width: "120px",
-                        height: "120px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 🟢 Dynamic Status Steps */}
+            {/* Status Progress uses currentStatusIndex based on selectedStatus */}
             <div style={{ margin: "20px 0", display: "flex", alignItems: "center" }}>
               {statusOrder.map((step, index) => {
                 const isActive = currentStatusIndex >= index;
@@ -395,9 +316,7 @@ useEffect(() => {
                           margin: "0 auto",
                         }}
                       >
-                        {index < currentStatusIndex && (
-                          <IonIcon icon={checkmarkCircle} />
-                        )}
+                        {index < currentStatusIndex && <IonIcon icon={checkmarkCircle} />}
                       </div>
                       <p style={{ fontSize: "0.8em" }}>{step}</p>
                     </div>
@@ -406,8 +325,7 @@ useEffect(() => {
                         style={{
                           flex: 1,
                           height: "3px",
-                          backgroundColor:
-                            index < currentStatusIndex ? circleColor : "#ccc",
+                          backgroundColor: index < currentStatusIndex ? circleColor : "#ccc",
                         }}
                       />
                     )}
@@ -416,56 +334,163 @@ useEffect(() => {
               })}
             </div>
 
-            {/* 🧩 Recipient Selector */}
-            <IonSelect
-              label="Assign Recipient"
-              fill="outline"
-              value={selectedRecipient}
-              placeholder="Select organization"
-              onIonChange={(e) => setSelectedRecipient(e.detail.value)}
-            >
-              {beneficiaries.map((b) => (
-                <IonSelectOption key={b._id} value={b.schoolName}>
-                  {b.schoolName}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-            <IonButton expand="block" color="secondary" onClick={handleRecipientUpdate}>
-              Save Recipient
-            </IonButton>
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              {/* ✅ CRITICAL FIX: Use nextStatusForDisplay for immediate button text update */}
+              <IonButton
+                expand="block"
+                color="primary"
+                onClick={handleNextStatus}
+                disabled={selectedStatus === "Delivered"}
+              >
+                {selectedStatus === "Delivered"
+                  ? "Delivered (Final Status)"
+                  : `Proceed to Next Stage (${nextStatusForDisplay})`}
+              </IonButton>
+            </div>
 
-            {/* 🧩 Status Selector */}
-            <IonSelect
-              label="Update Status"
-              fill="outline"
-              value={selectedStatus}
-              placeholder="Select status"
-              onIonChange={(e) => setSelectedStatus(e.detail.value)}
-              style={{ marginTop: "15px" }}
-            >
-              {statusOrder.map((s) => (
-                <IonSelectOption key={s} value={s}>
-                  {s}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-            <IonButton expand="block" color="primary" onClick={handleStatusUpdate}>
-              Update Status
-            </IonButton>
+            {/* Status Documentation History */}
+            {statusLogs.length > 0 && (
+              <div style={{ marginTop: "25px" }}>
+                <h3>Status Update History</h3>
+                {statusLogs.map((entry: any, idx: number) => {
+                  const prevStatus = entry.previousStatus || "N/A";
+                  const newStatus = entry.newStatus || entry.status || "N/A";
+                  const updatedAt =
+                    entry.updatedAt || entry.createdAt || entry.timestamp
+                      ? new Date(entry.updatedAt || entry.createdAt || entry.timestamp).toLocaleString()
+                      : "N/A";
+                  const remarks = entry.remarks || "No remarks";
+                  const updatedBy = entry.updatedBy || "System";
+                  const updatedByRole = entry.updatedByRole || "Admin";
 
-            <IonButton expand="block" color="medium" onClick={() => history.goBack()}>
-              Back
-            </IonButton>
+                  // Check both StatusDocumentation format (attachments) and statusLogs format (formFields.photoEvidence)
+                  const images: string[] = entry.attachments && entry.attachments.length > 0
+                      ? entry.attachments
+                      : entry.formFields?.photoEvidence || [];
+                  
+                  const historyRecipient = entry.recipientInfo || {};
+                  const isAcceptedStatus = newStatus === "Accepted";
+                    
+                  return (
+                    <IonCard key={idx} style={{ background: "#f9f9f9", marginBottom: "10px" }}>
+                      <IonCardContent>
+                        {/* Only display previous status if it exists in the log entry (from StatusDocumentation) */}
+                        {prevStatus !== "N/A" && <p><strong>Previous Status:</strong> {prevStatus}</p>}
+                        <p><strong>New Status:</strong> {newStatus}</p>
+                        <p><strong>Updated By:</strong> {updatedBy} ({updatedByRole})</p>
+                        <p><strong>Date:</strong> {updatedAt}</p>
+                        <p><strong>Remarks:</strong> {remarks}</p>
+
+                        {isAcceptedStatus && historyRecipient.school && (
+                            <div style={{ marginTop: "10px", borderTop: "1px dashed #ccc", paddingTop: "10px" }}>
+                                <h4>Recipient Assigned:</h4>
+                                <p><strong>School:</strong> {historyRecipient.school}</p>
+                                {historyRecipient.contactPerson && <p><strong>Contact Person:</strong> {historyRecipient.contactPerson}</p>}
+                                {historyRecipient.contactEmail && <p><strong>Contact Email:</strong> {historyRecipient.contactEmail}</p>}
+                                {historyRecipient.contactNumber && <p><strong>Contact Number:</strong> {historyRecipient.contactNumber}</p>}
+                            </div>
+                        )}
+
+                        {entry.formFields && Object.keys(entry.formFields).length > 0 && (
+                          <div style={{ marginTop: "10px" }}>
+                            <h4>Form Details:</h4>
+                            {Object.entries(entry.formFields).map(([key, value], i) => {
+                              if (key === "photoEvidence") return null;
+                              return (
+                                <p key={i}>
+                                  <strong>{key}:</strong> {String(value)}
+                                </p>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {images.length > 0 && (
+                          <div style={{ marginTop: "10px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                            {images.map((imgUrl, i) => (
+                              <img
+                                key={i}
+                                src={imgUrl}
+                                alt={`Evidence ${i + 1}`}
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                  border: "1px solid #ccc",
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </IonCardContent>
+                    </IonCard>
+                  );
+                })}
+              </div>
+            )}
           </IonCardContent>
         </IonCard>
-      </IonContent>
 
-      <IonToast
-        isOpen={!!toastMsg}
-        message={toastMsg}
-        duration={2000}
-        onDidDismiss={() => setToastMsg("")}
-      />
+        {/* Documentation Modal */}
+        <StatusDocumentationForm
+          isOpen={showDocModal}
+          // Pass the explicitly calculated next status
+          status={nextStatusForDisplay} 
+          itemID={itemID}
+          currentStatus={selectedStatus}
+          beneficiaries={beneficiaries}
+          selectedRecipient={selectedRecipient}
+          onRecipientChange={setSelectedRecipient}
+          existingImages={offchain.images || []}
+          onClose={() => {
+            setShowDocModal(false);
+            setNextStatus("");
+          }}
+          onSuccess={(updatedData) => {
+            // ✅ CRITICAL FIX: Use the authoritative status and owner from the server response
+            const serverStatus = updatedData.blockchain?.status || nextStatusForDisplay;
+            const serverOwner = updatedData.blockchain?.currentOwner || currentOwner;
+            
+            // 1. Update component tracking states for immediate UI refresh
+            setSelectedStatus(serverStatus);
+            setCurrentOwner(serverOwner);
+            setNextStatus("");
+            
+            // 2. Update the main donation state object using the complete response
+            setDonation((prev) => {
+              if (!prev) return prev;
+
+              return {
+                ...prev,
+                blockchain: {
+                  ...prev.blockchain,
+                  status: serverStatus,
+                  currentOwner: serverOwner,
+                },
+                offchain: {
+                  ...prev.offchain,
+                  ...updatedData.offchain,
+                  // Ensure statusLogs, images, and recipientInfo are used from the *latest* response
+                  recipientInfo: updatedData.offchain?.recipientInfo || prev.offchain?.recipientInfo,
+                  statusHistory: updatedData.offchain?.statusLogs || prev.offchain?.statusHistory || [],
+                  statusLogs: updatedData.offchain?.statusLogs || prev.offchain?.statusLogs || [], // Sync logs
+                  images: updatedData.offchain?.images || prev.offchain?.images || [],
+                },
+              };
+            });
+            
+            setShowDocModal(false);
+          }}
+        />
+
+        <IonToast
+          isOpen={!!toastMsg}
+          message={toastMsg}
+          duration={2000}
+          onDidDismiss={() => setToastMsg("")}
+        />
+      </IonContent>
     </IonPage>
   );
 };

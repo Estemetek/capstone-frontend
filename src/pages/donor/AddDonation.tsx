@@ -83,7 +83,7 @@ const AddDonation: React.FC = () => {
         notes: description,
         images: uploadedUrls, // saved Supabase URLs
         donorID: donorInfo.id || donorInfo.email,
-        currentOwner: donorInfo.name, // current owner is donor at creation
+        currentOwner: donorInfo.id || donorInfo.email, // current owner is donor at creation
         status: "Pending", //default initial status
         donorInfo,
         recipientInfo: {
@@ -222,7 +222,7 @@ const AddDonation: React.FC = () => {
             </div>
 
             {/* Recipient School */}
-            <div className="form-group">
+            {/* <div className="form-group">
               <label className="form-label">Recipient School</label>
               <IonInput
                 value={recipientSchool}
@@ -230,10 +230,10 @@ const AddDonation: React.FC = () => {
                 className="form-box"
                 onIonChange={(e) => setRecipientSchool(e.detail.value!)}
               />
-            </div>
+            </div> */}
 
             {/* Recipient Contact */}
-            <div className="form-group">
+            {/* <div className="form-group">
               <label className="form-label">Recipient Contact</label>
               <IonInput
                 value={recipientContact}
@@ -241,7 +241,7 @@ const AddDonation: React.FC = () => {
                 className="form-box"
                 onIonChange={(e) => setRecipientContact(e.detail.value!)}
               />
-            </div>
+            </div> */}
 
             {/* Image Upload */}
             <div className="form-group">
@@ -344,7 +344,7 @@ const AddDonation: React.FC = () => {
                 className="done-btn"
                 onClick={() => {
                   resetForm();
-                  history.push("/tabs/tab2");
+                  history.push("/tabs/tab2", { donationSubmitted: true });
                 }}
               >
                 Done

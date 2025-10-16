@@ -1,6 +1,5 @@
-// AdminHome.tsx
 import "./AdminHome.css";
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   IonPage,
   IonHeader,
@@ -19,9 +18,12 @@ import {
   IonNote,
   IonSearchbar,
   IonSpinner,
+  useIonViewWillEnter,
 } from "@ionic/react";
 
 import { heart, cube, people, business } from "ionicons/icons";
+// ⭐️ Import the API function
+import { getDonations, getBeneficiaries } from "../../services/api"; 
 
 interface Donation {
   itemID: string;
@@ -37,7 +39,40 @@ interface Donation {
 const AdminHome: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState(true);
+  // ⭐️ New state for total beneficiaries count
+  const [beneficiariesCount, setBeneficiariesCount] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 1. CENTRALIZED FETCH DONATIONS FUNCTION
+  const fetchDonations = useCallback(async () => {
+    try {
+      const data = await getDonations(); 
+      setDonations(data);
+    } catch (err) {
+      console.error("Error fetching donations:", err);
+    }
+  }, []);
+
+  // ⭐️ NEW: FETCH BENEFICIARIES COUNT
+  const fetchBeneficiariesCount = useCallback(async () => {
+    try {
+      const data = await getBeneficiaries();
+      setBeneficiariesCount(data.length);
+    } catch (err) {
+      console.error("Error fetching beneficiaries count:", err);
+      setBeneficiariesCount(0);
+    }
+  }, []);
+
+  // 2. ⭐️ USE IONIC LIFECYCLE HOOK FOR REFRESHING ALL DATA
+  useIonViewWillEnter(() => {
+    setLoading(true);
+    // Use Promise.all to fetch both datasets concurrently
+    Promise.all([fetchDonations(), fetchBeneficiariesCount()])
+      .finally(() => {
+        setLoading(false);
+      });
+  });
 
   // Derived metrics
   const totalDonations = donations.length;
@@ -52,26 +87,10 @@ const AdminHome: React.FC = () => {
     donations.map((d) => d.donorInfo?.name).filter(Boolean)
   ).size;
 
-  const organizations = new Set(
-    donations.map((d) => d.recipientInfo?.school).filter(Boolean)
-  ).size;
-
-  // Fetch donations from backend
-  useEffect(() => {
-    const fetchDonations = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/api/donations");
-        const data = await res.json();
-        setDonations(data);
-      } catch (err) {
-        console.error("Error fetching donations:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDonations();
-  }, []);
+  // ❌ REMOVE the redundant calculation based on donations 
+  // const organizations = new Set(
+  //   donations.map((d) => d.recipientInfo?.school).filter(Boolean)
+  // ).size; 
 
   // Sort by most recent
   const sortedDonations = [...donations].sort(
@@ -124,7 +143,7 @@ const AdminHome: React.FC = () => {
                     <IonCardContent>
                       <IonIcon icon={cube} className="dashboard-icon" />
                       <h2 className="card-number">{itemsDonated}</h2>
-                      <h2 className="card-label">Items Donated</h2>
+                      <h2 className="card-label">Donations Delivered</h2>
                     </IonCardContent>
                   </IonCard>
                 </IonCol>
@@ -145,15 +164,16 @@ const AdminHome: React.FC = () => {
                   <IonCard className="dashboard-card gray-card">
                     <IonCardContent>
                       <IonIcon icon={business} className="dashboard-icon" />
-                      <h2 className="card-number">{organizations}</h2>
-                      <h2 className="card-label">Organizations</h2>
+                      {/* ⭐️ Use the state-driven count here */}
+                      <h2 className="card-number">{beneficiariesCount}</h2>
+                      <h2 className="card-label">Beneficiary Schools</h2> 
                     </IonCardContent>
                   </IonCard>
                 </IonCol>
               </IonRow>
             </IonGrid>
 
-            {/* Recent Activity */}
+            {/* Recent Activity (unchanged) */}
             <h2 className="section-title">Recent Activity</h2>
             <div className="search-container">
               <IonSearchbar
