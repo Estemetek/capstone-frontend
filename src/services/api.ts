@@ -90,7 +90,7 @@ export interface Beneficiary {
 //   import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 export const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-console.log("🌐 API base URL:", API_BASE_URL);
+console.log("VITE_API_URL in use:", import.meta.env.VITE_API_URL);
 
 // -----------------------------
 // Helper: fetch with auth token
@@ -99,18 +99,32 @@ async function authFetch(url: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
 
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(options.headers || {}),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true", // 👈 bypass ngrok HTML warning
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 
   const response = await fetch(url, { ...options, headers });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`${response.status} ${response.statusText} - ${errorText}`);
-  }
-  return response.json();
+  const text = await response.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (err) {
+    console.warn("⚠️ Non-JSON response received:", text);
+    data = text;
+  }
+
+  if (!response.ok) {
+    const message =
+      typeof data === "string"
+        ? data
+        : data?.error || JSON.stringify(data) || "Request failed";
+    throw new Error(`${response.status} ${response.statusText} - ${message}`);
+  }
+
+  return data;
 }
 
 // -----------------------------
