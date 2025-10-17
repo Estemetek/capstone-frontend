@@ -129,16 +129,90 @@ const Tab3: React.FC = () => {
 
         {/* Scan Content */}
         {selected === "scan" && (
-          <div className="scan-container">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
-              alt="QR Scanner"
-              className="qr-image"
-            />
-            <h2 className="scan-title">Scan QR Code</h2>
-            <p className="scan-subtitle">Scan to trace the donation</p>
-          </div>
-        )}
+        <div className="scan-container">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
+            alt="QR Scanner"
+            className="qr-image"
+          />
+          <h2 className="scan-title">Scan QR Code</h2>
+          <p className="scan-subtitle">Scan or upload to trace the donation</p>
+
+          {/* 📸 Camera-based scan button (existing or future integration) */}
+          <IonButton expand="block" className="manual-btn">
+            Scan using Camera
+          </IonButton>
+
+          {/* 🖼 Upload QR option */}
+          <IonButton
+            expand="block"
+            color="medium"
+            className="manual-btn"
+            onClick={() => document.getElementById("qrUploadInput")?.click()}
+          >
+            Upload QR Code Image
+          </IonButton>
+
+          <input
+            type="file"
+            id="qrUploadInput"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              try {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                  img.src = event.target?.result as string;
+
+                  img.onload = async () => {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    if (!ctx) return;
+
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    const imageData = ctx.getImageData(0, 0, img.width, img.height);
+
+                    const jsQR = (await import("jsqr")).default;
+                    const qrCode = jsQR(
+                      imageData.data,
+                      imageData.width,
+                      imageData.height
+                    );
+
+                    if (qrCode) {
+                      const scannedId = qrCode.data.trim();
+                      setQuery(scannedId);
+                      setSelected("webquery");
+
+                      // Automatically trace the donation
+                      try {
+                        setLoading(true);
+                        const data = await getDonationById(scannedId);
+                        setResult(data);
+                      } catch (err: any) {
+                        setError("QR detected but donation not found.");
+                      } finally {
+                        setLoading(false);
+                      }
+                    } else {
+                      setError("No QR code detected in the image.");
+                    }
+                  };
+                };
+                reader.readAsDataURL(file);
+              } catch (err: any) {
+                setError("Failed to read QR image.");
+              }
+            }}
+          />
+        </div>
+      )}
 
         {/* Share Content */}
         {selected === "share" && (

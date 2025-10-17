@@ -190,3 +190,7 @@
 .history-card.clickable:hover {
   background: #f0f0f0;
 }
+.manual-btn {
+  margin-top: 12px;
+  --border-radius: 12px;
+}
