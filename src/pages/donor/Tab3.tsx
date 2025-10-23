@@ -22,6 +22,7 @@ import {
 } from "@ionic/react";
 import { getDonationById, getDonationsByCategory, DonationResponse, OffchainDonation } from "../../services/api";
 import { QRCodeCanvas } from "qrcode.react";
+import { BarcodeScanner } from "@capacitor-mlkit/barcode-scanning";
 
 const HISTORY_KEY = "scanHistory";
 
@@ -139,7 +140,38 @@ const Tab3: React.FC = () => {
           <p className="scan-subtitle">Scan or upload to trace the donation</p>
 
           {/* 📸 Camera-based scan button (existing or future integration) */}
-          <IonButton expand="block" className="manual-btn">
+          <IonButton
+            expand="block"
+            onClick={async () => {
+              try {
+                // Request camera permission
+                const permission = await BarcodeScanner.requestPermissions();
+                if (permission.camera !== "granted") {
+                  alert("Camera permission denied");
+                  return;
+                }
+
+                // Start scanning (opens a live camera preview)
+                const { barcodes } = await BarcodeScanner.scan();
+
+                if (barcodes.length > 0) {
+                  const scannedId = barcodes[0].rawValue.trim();
+                  setQuery(scannedId);
+                  setSelected("webquery");
+
+                  setLoading(true);
+                  const data = await getDonationById(scannedId);
+                  setResult(data);
+                  setLoading(false);
+                } else {
+                  setError("No QR code detected.");
+                }
+              } catch (err) {
+                console.error("Barcode scan error:", err);
+                setError("Failed to scan QR code.");
+              }
+            }}
+          >
             Scan using Camera
           </IonButton>
 
@@ -327,7 +359,7 @@ const Tab3: React.FC = () => {
                   <p><strong>ID:</strong> {result.blockchain.itemID}</p>
                   <p><strong>Status:</strong> {result.blockchain.status}</p>
                   <p><strong>Condition:</strong> {result.blockchain.condition}</p>
-                  <p><strong>Owner:</strong> {result.blockchain.currentOwner}</p>
+                  <p><strong>Current Owner:</strong> {result.blockchain.currentOwner}</p>
                   {/* <p><strong>Donor:</strong> {result.offchain.donorInfo.name}</p> */}
                   <p><strong>Blockchain Donor ID:</strong> {result.blockchain.donorID}</p>
                   <p><strong>Date Donated:</strong>{" "}

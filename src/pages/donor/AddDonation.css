@@ -122,3 +122,36 @@
   --border-radius: 8px;
   --color: #555;
 }
+/* ===== QR Code Section Enhancements ===== */
+.qr-code {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.qr-code img {
+  width: 150px;
+  height: 150px;
+}
+
+.qr-label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.qr-text {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Adjust Download Button styling */
+.download-btn {
+  margin-top: 1rem;
+  /* --background: #2dd36f; */
+  --border-radius: 8px;
+  color: white;
+  font-weight: 600;
+}

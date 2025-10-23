@@ -121,7 +121,7 @@ const AddDonation: React.FC = () => {
     setIsSubmitted(false);
     setQrUrl("");
   };
-
+  console.log("🔍 Final qrUrl being rendered:", qrUrl);
   return (
     <IonPage>
       <IonHeader>
@@ -329,13 +329,39 @@ const AddDonation: React.FC = () => {
               {qrUrl && (
                 <div className="qr-code">
                   <img src={qrUrl} alt="QR Code" width="150" />
+                  <p className="qr-label">
+                    QR Code for: <strong>{itemName}</strong><br />
+                    Donor: {donorInfo.name}
+                  </p>
                 </div>
               )}
+
               <p className="qr-text">
-                Scan the QR code to trace and verify your donation progress.
+                Scan this QR code to trace and verify your donation progress.
               </p>
 
-              <IonButton expand="block" className="download-btn">
+              <IonButton
+                expand="block"
+                className="download-btn"
+                onClick={async () => {
+                  try {
+                    const response = await fetch(qrUrl);
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = `BrightAid_QR_${itemName.replace(/\s+/g, "_")}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    console.error("❌ Failed to download QR:", err);
+                    alert("Failed to download QR code. Please try again.");
+                  }
+                }}
+              >
                 Download QR
               </IonButton>
               <IonButton
