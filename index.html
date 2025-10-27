@@ -10,7 +10,8 @@
       content="
         default-src 'self' data: blob: filesystem: http: https:;
         img-src 'self' data: blob: filesystem: http: https: https://*.ngrok-free.dev https://*.supabase.co https://res.cloudinary.com https://upload.wikimedia.org http://localhost:3000 http://192.168.*:*;
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' http: https:;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: http: https:;
+        worker-src 'self' blob:;
         style-src 'self' 'unsafe-inline' http: https:;
         connect-src 'self' http: https: https://*.ngrok-free.dev https://*.supabase.co https://res.cloudinary.com http://localhost:3000 http://192.168.*:*;
         font-src 'self' data: http: https:;

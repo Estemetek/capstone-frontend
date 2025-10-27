@@ -17,10 +17,17 @@ import {
     IonSelect,
     IonSelectOption,
     useIonViewWillEnter, // ⭐️ IMPORT THIS HOOK
+    IonButton,
+    IonModal,
 } from "@ionic/react";
 import { chevronForwardOutline } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router-dom";
 import { getDonations } from "../../services/api";
+import BarcodeScannerComponent from "react-qr-barcode-scanner";
+import QrScanner from "qr-scanner";
+import qrScannerWorkerPath from "qr-scanner/qr-scanner-worker.min.js?url";
+
+QrScanner.WORKER_PATH = qrScannerWorkerPath;
 
 // ... (Interface and Map definitions remain the same)
 interface Donation {
@@ -63,6 +70,8 @@ const AdminDonations: React.FC = () => {
     
     const [categoryFilter, setCategoryFilter] = useState("All");
 
+    const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+    const [showScanner, setShowScanner] = useState(false);
 
     // 1. ⭐️ CENTRALIZED FETCH FUNCTION
     const fetchDonations = useCallback(async () => {
@@ -149,6 +158,15 @@ const AdminDonations: React.FC = () => {
         }
     };
 
+    // ✅ Handle QR scan result
+    const handleScanResult = (result: any) => {
+        if (result?.text) {
+        const scannedItemID = result.text.trim();
+        console.log("✅ Scanned QR Code:", scannedItemID);
+        setShowScanner(false);
+        history.push(`/admin/donations/${scannedItemID}`);
+        }
+    };
 
     return (
         <IonPage>
@@ -160,6 +178,87 @@ const AdminDonations: React.FC = () => {
 
             <IonContent className="ion-padding">
                 <h2 className="page-heading">Donation Management</h2>
+
+                <IonButton
+                    expand="block"
+                    color="primary"
+                    onClick={() => setShowScanner(true)}
+                    style={{ marginBottom: "15px" }}
+                    >
+                    Scan QR Code
+                </IonButton>
+                <IonButton
+                    expand="block"
+                    color="secondary"
+                    onClick={() => document.getElementById("qr-upload")?.click()}
+                    >
+                    Upload QR Code
+                    </IonButton>
+
+                    <input
+                    id="qr-upload"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploadedImage(file);
+
+                        try {
+                        const imageUrl = URL.createObjectURL(file);
+                        const result = await QrScanner.scanImage(imageUrl, { returnDetailedScanResult: true });
+                        URL.revokeObjectURL(imageUrl);
+
+                        if (result) {
+                        const scannedText = result.data.trim(); // ✅ FIXED
+                        console.log("✅ Scanned from uploaded image:", scannedText);
+                        history.push(`/admin/donations/${scannedText}`);
+                        } else {
+                        alert("❌ No QR code detected in image.");
+                        }
+                        } catch (err: any) {
+                            console.error("Error reading QR image:", err);
+                            alert(`❌ Failed to decode QR code.\n${err?.message || "Try another image."}`);
+                        }
+                    }}
+                />
+
+                <IonModal isOpen={showScanner} onDidDismiss={() => setShowScanner(false)}>
+                    <IonHeader>
+                        <IonToolbar>
+                        <IonTitle>Scan Donation QR</IonTitle>
+                        </IonToolbar>
+                    </IonHeader>
+                    <IonContent className="ion-padding">
+                        <BarcodeScannerComponent
+                            width={400}
+                            height={400}
+                            onUpdate={(err: any, result: any) => {
+                                if (result) {
+                                const scannedText =
+                                    typeof result === "string"
+                                    ? result.trim()
+                                    : result.getText().trim();
+
+                                console.log("✅ Scanned QR Code:", scannedText);
+                                setShowScanner(false);
+                                history.push(`/admin/donations/${scannedText}`);
+                                } else if (err) {
+                                console.error("❌ Scanner Error:", err);
+                                }
+                            }}
+                            />
+                        <IonButton
+                        expand="block"
+                        color="medium"
+                        onClick={() => setShowScanner(false)}
+                        style={{ marginTop: "20px" }}
+                        >
+                        Close Scanner
+                        </IonButton>
+                    </IonContent>
+                </IonModal>
 
                 {/* Searchbar */}
                 <IonSearchbar
