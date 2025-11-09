@@ -149,6 +149,16 @@ const DonationDetail: React.FC = () => {
         return "#ccc";
     }
   };
+
+  //date formatting
+  const formatDateTime = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
   
   // 💡 NEW HELPER FUNCTION: Copy to Clipboard
   const copyToClipboard = (text: string, message: string) => {
@@ -319,13 +329,13 @@ const DonationDetail: React.FC = () => {
             <p>
               <br></br>
               <strong>Date Donated:</strong>{" "}
-              {new Date(offchain.createdAt || blockchain.timestamp).toLocaleString()}
+              {formatDateTime(offchain.createdAt || blockchain.timestamp).toLocaleString()}
             </p>
 
             {offchain.updatedAt && (
               <p>
                 <strong>Last Updated:</strong>{" "}
-                {new Date(offchain.updatedAt).toLocaleString()}
+                {formatDateTime(offchain.updatedAt).toLocaleString()}
               </p>
             )}
 
@@ -476,7 +486,7 @@ const DonationDetail: React.FC = () => {
                           <span style={{ fontWeight: "bold", color: getStatusColor(newStatus || 'default') }}>{newStatus}</span>
                         </p>
                         <p style={{ margin: '5px 0 0 0', fontSize: '0.9em' }}>
-                          <strong>Date:</strong> {new Date(dateString).toLocaleString()}
+                          <strong>Date Updated:</strong> {formatDateTime(dateString)}
                         </p>
                         {updatedBy && <p style={{ margin: '5px 0 0 0', fontSize: '0.9em' }}><strong>Signed By:</strong> {updatedBy}</p>}
                         {remarks && <p style={{ margin: '10px 0 0 0' }}><strong>Remarks:</strong> {remarks}</p>}
@@ -493,7 +503,7 @@ const DonationDetail: React.FC = () => {
                           <div style={{ marginTop: "15px", padding: "10px", border: "1px solid #c8e6c9", borderRadius: "6px", background: "#f0fff0", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ flex: 1, marginRight: '10px' }}>
                                 <p style={{ margin: 0, fontWeight: "bold", color: '#4CAF50' }}>
-                                  Blockchain Transaction ID (TxID):
+                                  Status Update ID:
                                 </p>
                                 <p style={{ margin: 0, fontSize: "0.8em", wordBreak: "break-all", color: "#388E3C" }}>
                                   {txID}

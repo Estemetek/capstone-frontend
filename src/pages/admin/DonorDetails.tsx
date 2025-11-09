@@ -47,7 +47,17 @@ const DonorDetails: React.FC = () => {
     if (!donor) return <IonContent className="ion-padding">Donor not found.</IonContent>;
 
     // Helper to format date
-    const formatDate = (dateString?: string) => dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
+    const formatDateTime = (isoString?: string) => {
+        if (!isoString) return "N/A";
+        return new Date(isoString).toLocaleString("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
 
     return (
         <IonPage>
@@ -80,7 +90,7 @@ const DonorDetails: React.FC = () => {
                             </IonItem>
                             <IonItem>
                                 <IonLabel>Member Since</IonLabel>
-                                <IonNote slot="end">{formatDate(donor.createdAt)}</IonNote>
+                                <IonNote slot="end">{formatDateTime(donor.createdAt)}</IonNote>
                             </IonItem>
                         </IonList>
                     </IonCardContent>
@@ -121,7 +131,7 @@ const DonorDetails: React.FC = () => {
                                             <h3>{donation.itemType}</h3>
                                             <p>Condition: {donation.condition}</p>
                                         </IonLabel>
-                                        <IonNote slot="end">{formatDate(donation.timestamp)}</IonNote>
+                                        <IonNote slot="end">{formatDateTime(donation.timestamp)}</IonNote>
                                     </IonItem>
                                 ))
                             )}

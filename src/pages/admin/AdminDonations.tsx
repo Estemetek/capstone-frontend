@@ -43,6 +43,18 @@ interface Donation {
     blockchain?: { status: string };
 }
 
+const formatDateTime = (isoString?: string) => {
+  if (!isoString) return "N/A";
+  return new Date(isoString).toLocaleString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 const ALL_STATUSES = ["Pending", "Accepted", "In Transit", "Delivered"];
 
 const CATEGORY_MAP: Record<string, string> = {
@@ -326,12 +338,28 @@ const AdminDonations: React.FC = () => {
                                             {donation.itemType} • {donation.condition.toUpperCase()}
                                         </p>
                                     </IonLabel>
-                                    <IonNote slot="end" color={getStatusColor(donation.status)}>
-                                        <strong>{donation.status}</strong>
-                                        <p style={{ color: 'var(--ion-color-step-500)', fontSize: '0.7em', marginTop: '2px' }}>
-                                            {new Date(donation.createdAt).toLocaleDateString()}
+                                    <IonNote
+                                        slot="end"
+                                        color={getStatusColor(donation.status)}
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            textAlign: "right",
+                                            minWidth: "110px",
+                                        }}
+                                        >
+                                        <strong style={{ fontSize: "0.9em" }}>{donation.status}</strong>
+                                        <p
+                                            style={{
+                                            color: "var(--ion-color-step-500)",
+                                            fontSize: "0.75em",
+                                            margin: "2px 0",
+                                            }}
+                                        >
+                                            {formatDateTime(donation.createdAt)}
                                         </p>
-                                        <IonIcon icon={chevronForwardOutline} className="arrow-icon" style={{ verticalAlign: 'middle' }} />
                                     </IonNote>
                                 </IonItem>
                             ))

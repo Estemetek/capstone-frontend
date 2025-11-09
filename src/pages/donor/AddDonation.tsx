@@ -74,12 +74,18 @@ const AddDonation: React.FC = () => {
         uploadedUrls.push(url);
       }
 
+      const parsedQuantity = Number(quantity);
+      if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+        alert("Please enter a valid quantity greater than 0.");
+        return;
+      }
+
       // ✅ Build donation payload
       const donationPayload = {
         itemType: itemName,
         category,
         condition,
-        quantity,
+        quantity: parsedQuantity,
         notes: description,
         images: uploadedUrls, // saved Supabase URLs
         donorID: donorInfo.id || donorInfo.email,

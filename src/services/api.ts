@@ -170,6 +170,11 @@ export async function createDonation(
   const donorEmail = localStorage.getItem("userEmail") || "unknown@example.com";
   const donorContact = localStorage.getItem("userContact") || "0000000000";
 
+  console.log("🧾 Sending donation data:", {
+    ...donationData,
+    quantity: donationData.quantity,
+  });
+
   return authFetch(`${API_BASE_URL}/donations`, {
     method: "POST",
     body: JSON.stringify({
@@ -180,6 +185,9 @@ export async function createDonation(
         email: donorEmail,
         contactNo: donorContact,
       },
+      quantity: donationData.quantity !== undefined && donationData.quantity !== null
+        ? Number(donationData.quantity)
+        : 1,
       // 👇 ensure images are only URLs now
       images: donationData.images || [],
     }),

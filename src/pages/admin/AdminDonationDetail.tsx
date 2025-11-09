@@ -57,6 +57,18 @@ interface DonationDetailData {
   };
 }
 
+const formatDateTime = (isoString?: string) => {
+  if (!isoString) return "N/A";
+  return new Date(isoString).toLocaleString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
 const AdminDonationDetail: React.FC = () => {
   const { itemID } = useParams<RouteParams>();
   const [donation, setDonation] = useState<DonationDetailData | null>(null);
@@ -261,12 +273,12 @@ const AdminDonationDetail: React.FC = () => {
             {offchain.quantity && <p><strong>Quantity:</strong> {offchain.quantity}</p>}
             <p>
               <strong>Date Donated:</strong>{" "}
-              {new Date(offchain.createdAt || blockchain.timestamp).toLocaleString()}
+              {formatDateTime(offchain.createdAt || blockchain.timestamp)}
             </p>
             {offchain.updatedAt && (
               <p>
                 <strong>Last Updated:</strong>{" "}
-                {new Date(offchain.updatedAt).toLocaleString()}
+                {formatDateTime(offchain.updatedAt)}
               </p>
             )}
             
@@ -355,10 +367,9 @@ const AdminDonationDetail: React.FC = () => {
                 {statusLogs.map((entry: any, idx: number) => {
                   const prevStatus = entry.previousStatus || "N/A";
                   const newStatus = entry.newStatus || entry.status || "N/A";
-                  const updatedAt =
+                  const updatedAt = formatDateTime(
                     entry.updatedAt || entry.createdAt || entry.timestamp
-                      ? new Date(entry.updatedAt || entry.createdAt || entry.timestamp).toLocaleString()
-                      : "N/A";
+                  );
                   const remarks = entry.remarks || "No remarks";
                   const updatedBy = entry.updatedBy || "System";
                   const updatedByRole = entry.updatedByRole || "Admin";

@@ -194,7 +194,14 @@ const AdminHome: React.FC = () => {
                     <IonNote slot="end" className="note-column">
                       <div className="note-date">
                         {d.createdAt
-                          ? new Date(d.createdAt).toLocaleDateString()
+                          ? new Date(d.createdAt).toLocaleString("en-US", {
+                              month: "short",
+                              day: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
                           : "N/A"}
                       </div>
                       {d.status && (
